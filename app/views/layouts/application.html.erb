@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>IronhackProject</title>
-  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
-  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
-  <%= csrf_meta_tags %>
+	<title>IronhackProject</title>
+  	<%= stylesheet_link_tag 'application', media: 'all' %>
+  	<%= javascript_include_tag 'application' %>
+  	<%= csrf_meta_tags %>
+    <!-- CSS  -->
+    <link href="assets/plugin.css" type="text/css" rel="stylesheet">
+    <link href="assets/custom.css" type="text/css" rel="stylesheet" >
 </head>
 <body>
 
-<%= yield %>
+	<%= yield %>
 
 </body>
 </html>
