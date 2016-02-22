@@ -1,8 +1,16 @@
 Rails.application.routes.draw do
-  devise_for :users
+  namespace :admin do
+    # get "/stats" => "stats#stats"
+    devise_scope :admin_user do
+      get '/stats/:scope' => "stats#stats", as: :admin_stats
+    end
+  end
 
-  root 'welcome#index'
-
+  devise_for :admin_users, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
+  devise_for :users, class_name: 'FormUser', :controllers => { omniauth_callbacks: 'omniauth_callbacks', registrations: 'registrations' }
+  root 'setup#index'
+  get '/setup' => 'setup#index'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
