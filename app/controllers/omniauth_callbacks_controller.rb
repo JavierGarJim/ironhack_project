@@ -1,9 +1,9 @@
 class OmniauthCallbacksController < Devise::OmniauthCallbacksController
+
+  
   def twitter
     generic_callback( 'twitter' )
   end
-
-
 
   def generic_callback( provider )
     @identity = Identity.find_for_oauth env["omniauth.auth"]
@@ -12,6 +12,10 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if @user.nil?
       @user = User.create( email: @identity.email || "" )
       @identity.update_attribute( :user_id, @user.id )
+    end
+
+    if @user.username.blank? && env['omniauth.auth']['info']['nickname']
+      @user.update_attribute( :username, @identity.nickname)
     end
 
     if @user.email.blank? && @identity.email
