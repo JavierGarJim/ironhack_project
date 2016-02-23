@@ -11,6 +11,49 @@
 </head>
 <body id="top" class="scrollspy">
 
+	<!-- Pre Loader -->
+	<div id="loader-wrapper">
+	    <div id="loader"></div>
+	 
+	    <div class="loader-section section-left"></div>
+	    <div class="loader-section section-right"></div>
+	 
+	</div>
+
+	<!--Navigation-->
+	 <div class="navbar-fixed">
+	    <nav id="nav_f" class="default_color" role="navigation">
+	        <div class="container">
+	            <div class="nav-wrapper">
+	            <a href="#" id="logo-container" class="brand-logo">#ilabs</a>
+	                <ul class="right hide-on-med-and-down">
+	                	<% if current_user.nil? %>
+		                    <li><a href="#intro">Service</a></li>
+		                    <li><a href="#team">Team</a></li>
+		                    <li><a href="#contact">Contact</a></li>
+		                    <li><%= link_to "Sign up", new_user_registration_path %></li>
+		                    <li><%= link_to "Log in", new_user_session_path %></li>
+	                    <% else %>
+							<li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
+	                    <% end %>
+	                </ul>
+	                <ul id="nav-mobile" class="side-nav">
+	                	<% if current_user.nil? %>
+		                    <li><a href="#intro">Service</a></li>
+		                    <li><a href="#team">Team</a></li>
+		                    <li><a href="#contact">Contact</a></li>
+		                    <li><%= link_to "Sign up", new_user_registration_path %></li>
+		                    <li><%= link_to "Log in", new_user_session_path %></li>
+	                    <% else %>>
+							<li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
+	                    <% end %>
+	                </ul>
+	            <a href="/" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
+	            </div>
+	        </div>
+	    </nav>
+	</div>
+
 	<%= yield %>
 
 </body>
