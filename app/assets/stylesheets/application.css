@@ -11,3 +11,6 @@
  * file per style scope.
  *
  */
+@import 'plugin.css';
+@import 'custom.css';
+*= require_tree .
