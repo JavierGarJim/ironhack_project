@@ -25,12 +25,14 @@
 	    <nav id="nav_f" class="default_color" role="navigation">
 	        <div class="container">
 	            <div class="nav-wrapper">
-	            <a href="#" id="logo-container" class="brand-logo">#ilabs</a>
+	            <a href="/" id="logo-container" class="brand-logo">#ilabs</a>
 	                <ul class="right hide-on-med-and-down">
-	                	<% if current_user.nil? %>
+	                	<% if current_page?(root_path) %>
 		                    <li><a href="#intro">Service</a></li>
 		                    <li><a href="#team">Team</a></li>
 		                    <li><a href="#contact">Contact</a></li>
+	                    <% end %>
+	                	<% if current_user.nil? %>
 		                    <li><%= link_to "Sign up", new_user_registration_path %></li>
 		                    <li><%= link_to "Log in", new_user_session_path %></li>
 	                    <% else %>
@@ -38,10 +40,12 @@
 	                    <% end %>
 	                </ul>
 	                <ul id="nav-mobile" class="side-nav">
-	                	<% if current_user.nil? %>
+	                	<% if current_page?(root_path) %>
 		                    <li><a href="#intro">Service</a></li>
 		                    <li><a href="#team">Team</a></li>
 		                    <li><a href="#contact">Contact</a></li>
+	                    <% end %>
+	                	<% if current_user.nil? %>
 		                    <li><%= link_to "Sign up", new_user_registration_path %></li>
 		                    <li><%= link_to "Log in", new_user_session_path %></li>
 	                    <% else %>>
