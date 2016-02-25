@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
-  <meta name="theme-color" content="#2196F3">
-  <title>IronhackProject</title>
-  <%= stylesheet_link_tag 'application', media: 'all' %>
-  <%= javascript_include_tag 'application' %>
-  <%= csrf_meta_tags %>
+  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+  	<meta name="theme-color" content="#2196F3">
+  	<title>#ilabs</title>
+  	<link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  	<%= stylesheet_link_tag 'application', media: 'all' %>
+  	<%= javascript_include_tag 'application' %>
+  	<%= csrf_meta_tags %>
 </head>
-<body id="top" class="scrollspy">
+<body id="top" class="">
 
 	<!-- Pre Loader -->
 	<div id="loader-wrapper">
@@ -28,29 +29,46 @@
 	            <a href="/" id="logo-container" class="brand-logo">#ilabs</a>
 	                <ul class="right hide-on-med-and-down">
 	                	<% if current_page?(root_path) %>
-		                    <li><a href="#intro">Service</a></li>
+		                    <li><a href="#intro">About</a></li>
 		                    <li><a href="#team">Team</a></li>
 		                    <li><a href="#contact">Contact</a></li>
+		                    <li><a href="/service">Service</a></li>
 	                    <% end %>
 	                	<% if current_user.nil? %>
 		                    <li><a class="user_label" href="<%= new_user_registration_path %>">Sign up</a></li>
 		                    <li><a class="user_label" href="<%= new_user_session_path %>">Log in</a></li>
 	                    <% else %>
-	                    	<li><a href="<%= destroy_user_session_path %>" data-method="delete"><span class="username_label"><%= current_user.username %></span><span class="user_label logout_label">Log out</span></a></li>
+	                    	<li>
+	                    		<a href="<%= destroy_user_session_path %>" data-method="delete">
+									<div class="chip">
+								    	<img src="<%= current_identity.image %>" alt="Contact Person">
+							    		<%= current_identity.nickname %>
+							  		</div>
+	                    			<span class="user_label logout_label">Log out</span>
+	                    		</a>
+                    		</li>
 	                    <% end %>
 	                </ul>
 	                <ul id="nav-mobile" class="side-nav">
 	                	<% if current_page?(root_path) %>
-		                    <li><a href="#intro">Service</a></li>
+		                    <li><a href="#intro">About</a></li>
 		                    <li><a href="#team">Team</a></li>
 		                    <li><a href="#contact">Contact</a></li>
+		                    <li><a href="/service">Service</a></li>
 	                    <% end %>
 	                	<% if current_user.nil? %>
-		                    <li><%= link_to "Sign up", new_user_registration_path %></li>
-		                    <li><%= link_to "Log in", new_user_session_path %></li>
-	                    <% else %>>
-	                    	<strong class="username_label"><%= current_user.username %></strong>
-							<li><%= link_to "Log out", destroy_user_session_path, method: :delete %></li>
+		                    <li><a class="user_label" href="<%= new_user_registration_path %>">Sign up</a></li>
+		                    <li><a class="user_label" href="<%= new_user_session_path %>">Log in</a></li>
+	                    <% else %>
+	                    	<li>
+	                    		<a href="<%= destroy_user_session_path %>" data-method="delete">
+									<div class="chip">
+								    	<img src="<%= current_identity.image %>" alt="Contact Person">
+							    		<%= current_identity.nickname %>
+							  		</div>
+	                    			<span class="user_label logout_label">Log out</span>
+	                    		</a>
+                    		</li>
 	                    <% end %>
 	                </ul>
 	            <a href="/" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>

@@ -1,1 +1,96 @@
-<h1>SERVICE</h1>
+
+<div class="js-service">
+  <div class="section">
+      <div class="">
+          <div class="row">
+              <div class="col s8">
+                <div class="">
+                  <div class="card-panel">
+                  
+                  </div>
+                </div>
+                <div class="section" id="control">
+                  <ul class="collapsible popout" data-collapsible="accordion">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">search</i>Tags</div>
+                      <div class="collapsible-body">
+
+                        <table class="datatable bordered highlight centered tblData-search">
+                          <thead>
+                            <tr>
+                                <th data-field="Tag">Tag</th>
+                                <th data-field="Comment">Comment</th>
+                                <th data-field="Promo">Promo</th>
+                                <th data-field="Add">
+                                  <button class="btn-floating waves-effect waves-light btnAdd-tag" name="action"><i class="material-icons">add</i>
+                                  </button>
+                                </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                          </tbody>
+                        </table>
+
+                      </div>
+                    </li>
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">message</i>Comments</div>
+                      <div class="collapsible-body">
+                        <table class="datatable bordered highlight centered tblData-comment">
+                          <thead>
+                            <tr>
+                                <th data-field="Comment">Template</th>
+                                <th data-field="Add">
+                                  <button class="btn-floating waves-effect waves-light btnAdd-comment" type="submit" name="action"><i class="material-icons">add</i>
+                                  </button>
+                                </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                          </tbody>
+                        </table>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">star_rate</i>Promos</div>
+                      <div class="collapsible-body">
+                        <table class="datatable bordered highlight centered tblData-promo">
+                          <thead>
+                            <tr>
+                                <th data-field="Comment">Template</th>
+                                <th data-field="Add">
+                                  <button class="btn-floating waves-effect waves-light btnAdd-promo" type="submit" name="action"><i class="material-icons">add</i>
+                                  </button>
+                                </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+
+                          </tbody>
+                        </table>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col s4">
+                <div class="section scrollspy tweet_list" id="tweets">
+                  <% @tweets.each do |t| %>
+                    <div class="card card-avatar">
+                      <div class="card-content">
+                          <span class="card-title activator grey-text text-darken-4">
+                            <%= t %>
+                            <%#= raw(@client.oembed(t.id, align: 'center').html) %>
+                          </span>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+<script type="text/javascript" src="assets/service.js"></script>

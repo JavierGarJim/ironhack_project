@@ -7,16 +7,21 @@ Rails.application.routes.draw do
   end
 
   devise_for :admin_users, ActiveAdmin::Devise.config
+  
   ActiveAdmin.routes(self)
+
   devise_for :users, class_name: 'FormUser', :controllers => { omniauth_callbacks: 'omniauth_callbacks', registrations: 'registrations', passwords: 'passwords' }
   
   root 'welcome#index'
 
   resources :service, only: [ :index ]
-
+  get "/service/update" => "service#update"
+  
   scope "/api" do
 
   end
+
+  
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

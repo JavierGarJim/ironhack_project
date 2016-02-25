@@ -12,6 +12,5 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require plugin-min.js
-//= require custom-min.js
-//= require_tree .
+//= require plugin.js
+//= require custom.js

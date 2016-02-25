@@ -13,10 +13,10 @@
  */
 @import 'plugin.css';
 @import 'custom.css';
+@import 'service.css';
 @import *;
 
 .nav_bar_container {
-	padding-right: 20px;
 	padding-left: 20px;
 }
 
