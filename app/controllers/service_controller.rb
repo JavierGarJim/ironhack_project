@@ -12,7 +12,9 @@ puts "------"
 
 	def index
 		@tweets = [1, 2, 3, 4, 5]#@client.search("ironhack", result_type: "recent")
+		# @user = @client.user
 
+		# render json: @user
 
 		# render json: @tweets
 		# @tweets = []

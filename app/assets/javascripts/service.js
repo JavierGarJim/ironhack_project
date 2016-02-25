@@ -240,3 +240,6 @@ function Delete_promo(){
 	$(".btnDelete-promo").bind("click", Delete_promo); 
 	$(".btnAdd-promo").bind("click", Add_promo); 
 })();
+
+
+

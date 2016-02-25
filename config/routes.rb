@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   
   ActiveAdmin.routes(self)
 
-  devise_for :users, class_name: 'FormUser', :controllers => { omniauth_callbacks: 'omniauth_callbacks', registrations: 'registrations', passwords: 'passwords' }
+  devise_for :users, class_name: 'FormUser', :controllers => { omniauth_callbacks: 'omniauth_callbacks', registrations: 'registrations' }
   
   root 'welcome#index'
 
