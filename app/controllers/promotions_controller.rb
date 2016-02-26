@@ -9,9 +9,17 @@ class PromotionsController < ApplicationController
 	end
 
 	def create
-		promotion = current_user.promotions.create(promotion_params)
+		if current_user.promotions.find_by(template: params[:template])
+
+			render json: {error: "promotion already found"},
+			status: 404
+
+			return
+		else
+			promotion = current_user.promotions.create(promotion_params)
 		
-		render json: commment
+			render json: promotion
+		end
 	end
 
 	def destroy

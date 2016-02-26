@@ -9,9 +9,18 @@ class CommentsController < ApplicationController
 	end
 
 	def create
-		comment = current_user.comments.create(comment_params)
+puts "-------------------------"
+		if current_user.comments.find_by(template: params[:template])
+
+			render json: {error: "comment already found"},
+			status: 404
+
+			return
+		else
+			comment = current_user.comments.create(comment_params)
 		
-		render json: commment
+			render json: comment
+		end
 	end
 
 	def destroy

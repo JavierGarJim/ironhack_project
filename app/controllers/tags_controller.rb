@@ -9,9 +9,17 @@ class TagsController < ApplicationController
 	end
 
 	def create
-		tag = current_user.tags.create(tag_params)
+		if current_user.tags.find_by(name: params[:name])
+
+			render json: {error: "tag name already found"},
+			status: 404
+
+			return
+		else
+			tag = current_user.tags.create(tag_params)
 		
-		render json: tag
+			render json: tag
+		end
 	end
 
 	def destroy
