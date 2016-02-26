@@ -1,6 +1,7 @@
 class CommentsController < ApplicationController
-	# before_action :authenticate_user!
-	skip_before_filter :verify_authenticity_token  
+	before_action :authenticate_user!
+	protect_from_forgery with: :null_session
+	
 
 	def index
 		comments = current_user.comments.all
@@ -9,7 +10,6 @@ class CommentsController < ApplicationController
 	end
 
 	def create
-puts "-------------------------"
 		if current_user.comments.find_by(template: params[:template])
 
 			render json: {error: "comment already found"},

@@ -1,6 +1,7 @@
 class TagsController < ApplicationController
-	# before_action :authenticate_user!
-	skip_before_filter :verify_authenticity_token  
+	before_action :authenticate_user!
+	protect_from_forgery with: :null_session
+	
 
 	def index
 		tags = current_user.tags.all

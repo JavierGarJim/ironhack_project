@@ -21,13 +21,48 @@ console.log("Starting Service...");
 
 (function poll(){
 	$.ajax({ url: "/service/update", success: function(data){
-    	console.log("Poll");
+    	console.log("Polled");
     	
+console.log(data);
+
+		// Card Panel
+		$(".card-followers").html(data.user.followers_count);
+		$(".card-friends").html(data.user.friends_count);
+		$(".card-listed").html(data.user.listed_count);
+		$(".card-favorites").html(data.user.favourites_count);
+		
+		// Tweets Panel
+		$("#tweets").empty();
+
+		data.tweets.forEach(function(t) {
+			$.when($("#tweets").append(
+				                    `<div class="card card-avatar">
+				                      <div class="card-content">
+				                          <span class="card-title activator grey-text text-darken-4" id="${t.id}">
+				                          </span>
+				                      </div>
+				                    </div>`
+			                  	)).then( function() {
+									twttr.widgets.createTweet(
+										t.id_str,
+										document.getElementById(`${t.id}`),
+										{
+											// theme: 'dark'
+										}
+									);
+								});
+		});
+
+		
+		
+ 
+
+
 
     	//Setup the next poll recursively
     	setTimeout(function(){
     		poll();
-    	}, 60000);
+    	}, 15 * 60000);
   	}, dataType: "json"});
 })();
 

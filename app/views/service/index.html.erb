@@ -1,16 +1,16 @@
 
 <div class="js-service">
   <div class="section">
-      <div class="">
+      <!-- <div class=""> -->
           <div class="row">
               <div class="col s8">
-                <div class="">
+                <!-- <div class=""> -->
                   <div class="card-panel">
                     <div class="row">
                       <div class="col s3 center">
                         <div class="card green">
-                          <div class="card-content white-text">
-                            1234
+                          <div class="card-content white-text card-followers" style="font-size: 180%">
+                            
                           </div>
                         </div>
                         <div class="card-action green white-text centered">
@@ -21,8 +21,8 @@
                       </div>
                       <div class="col s3 center">
                         <div class="card green">
-                          <div class="card-content white-text">
-                            1234
+                          <div class="card-content white-text card-friends" style="font-size: 180%">
+                            
                           </div>
                         </div>
                         <div class="card-action green white-text center">
@@ -33,8 +33,8 @@
                       </div>
                       <div class="col s3 center">
                         <div class="card green">
-                          <div class="card-content white-text">
-                            1234
+                          <div class="card-content white-text card-listed" style="font-size: 180%">
+                            
                           </div>
                         </div>
                         <div class="card-action green white-text center">
@@ -45,8 +45,8 @@
                       </div>
                       <div class="col s3 center">
                         <div class="card green">
-                          <div class="card-content white-text">
-                            1234
+                          <div class="card-content white-text card-favorites" style="font-size: 180%">
+                            
                           </div>
                         </div>
                         <div class="card-action green white-text center">
@@ -55,7 +55,7 @@
                       </div>
                     </div>
                   </div>
-                </div>
+                <!-- </div> -->
                 <div class="section" id="control">
                   <ul class="collapsible popout" data-collapsible="accordion">
                     <li>
@@ -123,21 +123,12 @@
                 </div>
               </div>
               <div class="col s4">
-                <div class="section scrollspy tweet_list" id="tweets">
-                  <% @tweets.each do |t| %>
-                    <div class="card card-avatar">
-                      <div class="card-content">
-                          <span class="card-title activator grey-text text-darken-4">
-                            <%= t %>
-                            <%#= raw(@client.oembed(t.id, align: 'center').html) %>
-                          </span>
-                      </div>
-                    </div>
-                  <% end %>
+                <div class="" id="tweets">
+
                 </div>
               </div>
           </div>
-      </div>
+      <!-- </div> -->
   </div>
 </div>
 <script type="text/javascript" src="assets/service.js"></script>

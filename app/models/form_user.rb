@@ -10,11 +10,18 @@ class FormUser < User
   validates_length_of       :password, within: Devise.password_length, allow_blank: true
 
   def password_required?
-    return false if email.blank?
-    !persisted? || !password.nil? || !password_confirmation.nil?
+    if self.identities.find_by(provider: "twitter").nil?
+      false
+    else
+      return false if email.blank? || !persisted? || !password.nil? || !password_confirmation.nil?
+    end
   end
 
   def email_required?
-    true
+    if self.identities.find_by(provider: "twitter").nil?
+      true
+    else
+      false
+    end
   end
 end

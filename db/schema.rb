@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160226005238) do
+ActiveRecord::Schema.define(version: 20160226174953) do
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -116,6 +116,8 @@ ActiveRecord::Schema.define(version: 20160226005238) do
     t.integer  "invitations_count",      default: 0
     t.boolean  "approved"
     t.datetime "last_request"
+    t.text     "last_update"
+    t.text     "first_update"
   end
 
   add_index "users", ["email"], name: "index_users_on_email"

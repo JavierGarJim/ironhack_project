@@ -10,6 +10,9 @@ class User < ActiveRecord::Base
   has_many :comments
   has_many :promotions
 
+  serialize :last_update, JSON
+  serialize :first_update, JSON
+
 
   def twitter
     identities.where( :provider => "twitter" ).first
