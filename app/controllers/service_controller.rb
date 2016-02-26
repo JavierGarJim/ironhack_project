@@ -2,17 +2,46 @@ class ServiceController < ApplicationController
 	before_action :authenticate_user!, :create_user
 
 	def update
-		@tweets = []#@cache.friends
-puts "------"
+		user = []
+		tweets = []
+
+		# if current_user.last_request > 15.minutes.ago
+		# 	render json: user.to_json(include: [:tweets])
+		# end
+
+		# user = @client.user
+
+		# current_user.tags.each do |tag|
+		# 	tweets = @client.search(tag.name, result_type: "recent", count: 3)
+
+		# 	if tag.for_comment
+
+
+
+		# 	elsif tag.for_pro
+
+		# 	end
+
+
+		# end
+
+
+
+
+
+
+
+puts 
 puts "UPDATE"
-puts "------"
+puts 
 		
-		render json: @tweets
+		render json: tweets
 	end
 
 	def index
-		@tweets = [1, 2, 3, 4, 5]#@client.search("ironhack", result_type: "recent")
-		# @user = @client.user
+		@tweets = [1, 2, 3, 4, 5]
+		# @tweets = @client.search("ironhack", result_type: "recent")
+		#@user = @client.user
 
 		# render json: @user
 
@@ -73,4 +102,12 @@ puts "------"
 		 #  		end
 		 #  	end
   		end
+
+		def comment_params
+			params.require(:comment).permit(:template)
+		end
+
+		def comment_params
+			params.require(:comment).permit(:template)
+		end
 end

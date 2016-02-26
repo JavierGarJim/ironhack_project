@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160223145716) do
+ActiveRecord::Schema.define(version: 20160226005238) do
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -46,6 +46,15 @@ ActiveRecord::Schema.define(version: 20160223145716) do
   add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true
   add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
 
+  create_table "comments", force: :cascade do |t|
+    t.string   "template"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "user_id"
+  end
+
+  add_index "comments", ["user_id"], name: "index_comments_on_user_id"
+
   create_table "identities", force: :cascade do |t|
     t.integer  "user_id"
     t.string   "provider"
@@ -63,6 +72,26 @@ ActiveRecord::Schema.define(version: 20160223145716) do
   end
 
   add_index "identities", ["user_id"], name: "index_identities_on_user_id"
+
+  create_table "promotions", force: :cascade do |t|
+    t.string   "template"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer  "user_id"
+  end
+
+  add_index "promotions", ["user_id"], name: "index_promotions_on_user_id"
+
+  create_table "tags", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+    t.integer  "user_id"
+    t.boolean  "for_comment"
+    t.boolean  "for_promo"
+  end
+
+  add_index "tags", ["user_id"], name: "index_tags_on_user_id"
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                  default: ""
@@ -86,6 +115,7 @@ ActiveRecord::Schema.define(version: 20160223145716) do
     t.string   "invited_by_type"
     t.integer  "invitations_count",      default: 0
     t.boolean  "approved"
+    t.datetime "last_request"
   end
 
   add_index "users", ["email"], name: "index_users_on_email"

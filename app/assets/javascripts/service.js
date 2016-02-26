@@ -15,12 +15,61 @@ console.log("Starting Service...");
   	}, dataType: "json"});
 })();
 
+function Update_tags() {
+	var request = $.ajax({
+	  	url: `/api/tags`,
+	      	type: 'GET'
+	});
+
+	request.done(function(response) {
+		response.forEach(function(t) {
+			var tr = `
+				<tr id=${t.id}> 
+					<td>${t.name}</td>`;
+			if (t.for_comment) {
+				tr += `
+					<td><input type="checkbox" id="" checked="checked"><label for="${t.id}-comment-box"></label></td>`;
+			} else {
+				tr += `
+					<td><input type="checkbox" id=""><label for="${t.id}-comment-box"></label></td>`;
+			}
+
+			if (t.for_promo) {
+				tr += `
+					<td>
+						<input type="checkbox" id="" checked="checked"><label for="${t.id}-promo-box"></label>
+					</td>`;
+			} else {
+				tr += `
+					<td>
+						<input type="checkbox" id=""><label for="${t.id}-promo-box"></label>
+					</td>`;				
+			}
+
+			tr += `
+						<td>
+							<button class="btn-floating waves-effect waves-light ${t.id}-btnEdit-tag" name="action">
+								<i class="mdi-editor-mode-edit"></i>
+							</button>
+							<button class="btn-floating waves-effect waves-light ${t.id}-btnDelete-tag" name="action">
+								<i class="material-icons">delete</i>
+							</button>
+						</td>
+					</tr>`;
+
+			$(".tblData-search tbody").append(tr);
+			$(`.${t.id}-btnEdit-tag`).bind("click", Edit_tag);	
+			$(`.${t.id}-btnDelete-tag`).bind("click", Delete_tag);
+		});
+	});	
+}
+
 function Add_tag(){
+	$(".btnAdd-tag").off();
+
 	$(".tblData-search tbody").append( 
 		`<tr> 
-		<td>
-			<input class="validate" type="text">
-		</td>
+		<td><input class="validate" type="text"></td>
 		<td>
 			<input type="checkbox" id="comment-box"><label for="comment-box"></label>
 		</td>
@@ -37,8 +86,8 @@ function Add_tag(){
 		</td>
 		</tr>`
 		); 
-	$(".btnSave-tag").bind("click", Save_tag);	
-	$(".btnDelete-tag").bind("click", Delete_tag); 
+	$(`.btnSave-tag`).bind("click", Save_tag);	
+	$(`.btnDelete-tag`).bind("click", Delete_tag); 
 };
 
 function Add_comment(){
@@ -82,30 +131,60 @@ function Add_promo(){
 };
 
 function Save_tag(){ 
-	var par = $(this).parent().parent(); 
+	var par = $(this).parent().parent();
+	var id = par.prop('id');
 	var tdTag = par.children("td:nth-child(1)"); 
 	var tdComment = par.children("td:nth-child(2)"); 
 	var tdPromo = par.children("td:nth-child(3)");
 	var tdButtons = par.children("td:nth-child(4)");
 
-	console.log(tdTag.children("input[type=text]"));
-
-	if(tdTag.children("input[type=text]").val() == "")
+	if(tdTag.children("input[type=text]").val() == "") {
 		return
+	} else {
+		var request;
 
-	tdTag.html(tdTag.children("input[type=text]").val()); 
-	tdComment.children("input").attr('id',"");
-	tdPromo.children("input").attr('id',"");
-	tdButtons.html(
-		`<button class="btn-floating waves-effect waves-light btnEdit-tag" name="action">
-			<i class="mdi-editor-mode-edit"></i>
-		</button>
-		<button class="btn-floating waves-effect waves-light btnDelete-tag" name="action">
-			<i class="material-icons">delete</i>
-		</button>`
-		); 
-	$(".btnEdit-tag").bind("click", Edit_tag); 
-	$(".btnDelete-tag").bind("click", Delete_tag); 
+		if(par.prop('id') == "") {
+			request = $.ajax({
+			  	url: `/api/tags`,
+			      	type: 'POST',
+			      	data: {
+			      		name: tdTag.children("input[type=text]").val(),
+			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
+			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      	}
+			});
+		} else {
+			request = $.ajax({
+			  	url: `/api/tags/${par.prop('id')}`,
+			      	type: 'PUT',
+			      	data: {
+			      		name: tdTag.children("input[type=text]").val(),
+			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
+			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      	}
+			});			
+		}
+
+		request.done(function(response) {
+			par.attr('id', response.id);
+			tdTag.html(tdTag.children("input[type=text]").val());
+			tdComment.children("input").attr('id',"");
+			tdComment.children("label").attr('for',`${response.id}-comment-box`);
+			tdPromo.children("input").attr('id',"");
+			tdPromo.children("label").attr('for',`${response.id}-promo-box`);
+			tdButtons.html(
+				`<button class="btn-floating waves-effect waves-light ${id}-btnEdit-tag" name="action">
+					<i class="mdi-editor-mode-edit"></i>
+				</button>
+				<button class="btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
+					<i class="material-icons">delete</i>
+				</button>`
+				); 
+			$(`.${id}-btnEdit-tag`).bind("click", Edit_tag); 
+			$(`.${id}-btnDelete-tag`).bind("click", Delete_tag);
+			$(`.btnAdd-tag`).bind("click", Add_tag);
+		});
+	}
 };
 
 function Save_comment(){ 
@@ -113,22 +192,48 @@ function Save_comment(){
 	var tdComment = par.children("td:nth-child(1)");
 	var tdButtons = par.children("td:nth-child(2)");
 
-	console.log(tdComment.children("input[type=text]"));
-
-	if(tdComment.children("input[type=text]").val() == "")
+	if(tdComment.children("input[type=text]").val() == "") {
 		return
+	} else {
+		var request;
 
-	tdComment.html(tdComment.children("input[type=text]").val());
-	tdButtons.html(
-		`<button class="btn-floating waves-effect waves-light btnEdit-comment" name="action">
-			<i class="mdi-editor-mode-edit"></i>
-		</button>
-		<button class="btn-floating waves-effect waves-light btnDelete-comment" name="action">
-			<i class="material-icons">delete</i>
-		</button>`
-		); 
-	$(".btnEdit-comment").bind("click", Edit_comment); 
-	$(".btnDelete-comment").bind("click", Delete_comment); 
+		if(par.prop('id') == "") {
+			request = $.ajax({
+			  	url: `/api/comments`,
+			      	type: 'POST',
+			      	data: {
+			      		name: tdCommen.children("input[type=text]").val(),
+			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
+			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      	}
+			});
+		} else {
+			request = $.ajax({
+			  	url: `/api/comments/${par.prop('id')}`,
+			      	type: 'PUT',
+			      	data: {
+			      		name: tdComment.children("input[type=text]").val(),
+			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
+			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      	}
+			});			
+		}
+
+		request.done(function(response) {
+			par.attr('id', response.id);
+			tdComment.html(tdComment.children("input[type=text]").val());
+			tdButtons.html(
+				`<button class="btn-floating waves-effect waves-light btnEdit-comment" name="action">
+					<i class="mdi-editor-mode-edit"></i>
+				</button>
+				<button class="btn-floating waves-effect waves-light btnDelete-comment" name="action">
+					<i class="material-icons">delete</i>
+				</button>`
+				); 
+			$(".btnEdit-comment").bind("click", Edit_comment); 
+			$(".btnDelete-comment").bind("click", Delete_comment);
+		});
+	}
 };
 
 function Save_promo(){ 
@@ -136,45 +241,71 @@ function Save_promo(){
 	var tdPromo = par.children("td:nth-child(1)");
 	var tdButtons = par.children("td:nth-child(2)");
 
-	console.log(tdPromo.children("input[type=text]"));
-
-	if(tdPromo.children("input[type=text]").val() == "")
+	if(tdPromo.children("input[type=text]").val() == "") {
 		return
+	} else {
+		var request;
 
-	tdPromo.html(tdPromo.children("input[type=text]").val());
-	tdButtons.html(
-		`<button class="btn-floating waves-effect waves-light btnEdit-promo" name="action">
-			<i class="mdi-editor-mode-edit"></i>
-		</button>
-		<button class="btn-floating waves-effect waves-light btnDelete-promo" name="action">
-			<i class="material-icons">delete</i>
-		</button>`
-		); 
-	$(".btnEdit-promo").bind("click", Edit_promo); 
-	$(".btnDelete-promo").bind("click", Delete_promo); 
+		if(par.prop('id') == "") {
+			request = $.ajax({
+			  	url: `/api/promotions`,
+			      	type: 'POST',
+			      	data: {
+			      		name: tdPromo.children("input[type=text]").val(),
+			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
+			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      	}
+			});
+		} else {
+			request = $.ajax({
+			  	url: `/api/promotions/${par.prop('id')}`,
+			      	type: 'PUT',
+			      	data: {
+			      		name: tdPromo.children("input[type=text]").val(),
+			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
+			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      	}
+			});			
+		}
+
+		request.done(function(response) {
+			par.attr('id', response.id);
+			tdTag.html(tdPromo.children("input[type=text]").val());
+			tdButtons.html(
+				`<button class="btn-floating waves-effect waves-light btnEdit-promo" name="action">
+					<i class="mdi-editor-mode-edit"></i>
+				</button>
+				<button class="btn-floating waves-effect waves-light btnDelete-promo" name="action">
+					<i class="material-icons">delete</i>
+				</button>`
+				); 
+			$(".btnEdit-promo").bind("click", Edit_promo); 
+			$(".btnDelete-promo").bind("click", Delete_promo);
+		});
+	}
 };
 
 function Edit_tag(){ 
-	var par = $(this).parent().parent(); 
+	var par = $(this).parent().parent();
+	var id = par.prop('id');
 	var tdTag = par.children("td:nth-child(1)"); 
 	var tdComment = par.children("td:nth-child(2)"); 
 	var tdPromo = par.children("td:nth-child(3)");
 	var tdButtons = par.children("td:nth-child(4)");
 	tdTag.html("<input type='text' id='txtTag' value='"+tdTag.html()+"'>");
-	tdComment.children("input").attr('id',"comment-box");
-	tdPromo.children("input").attr('id',"promo-box");
+	tdComment.children("input").attr('id',`${par.prop('id')}-comment-box`);
+	tdPromo.children("input").attr('id',`${par.prop('id')}-promo-box`);
 	tdButtons.html(
-		`<button class="btn-floating waves-effect waves-light btnSave-tag" name="action">
+		`<button class="btn-floating waves-effect waves-light ${id}-btnSave-tag" name="action">
 			<i class="material-icons">done_all</i>
 		</button>
-		<button class="btn-floating waves-effect waves-light btnDelete-tag" name="action">
+		<button class="btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
 			<i class="material-icons">delete</i>
 		</button>
 		`
 		); 
-	$(".btnSave-tag").bind("click", Save_tag);
-	$(".btnEdit-tag").bind("click", Edit_tag); 
-	$(".btnDelete-tag").bind("click", Delete_tag); 
+	$(`.${id}-btnSave-tag`).bind("click", Save_tag);
+	$(`.${id}-btnDelete-tag`).bind("click", Delete_tag); 
 };
 
 function Edit_comment(){ 
@@ -216,18 +347,65 @@ function Edit_promo(){
 };
 
 function Delete_tag(){ 
-	var par = $(this).parent().parent(); par.remove(); 
+	var par = $(this).parent().parent(); 
+
+	if(par.prop('id') != "") {
+		var request = $.ajax({
+		  	url: `/api/tags/${par.prop('id')}`,
+		      	type: 'DELETE'
+		});
+
+		request.done(function(response) {
+			par.remove();
+			$(`.btnAdd-tag`).off();
+			$(`.btnAdd-tag`).bind("click", Add_tag);
+		});		
+	} else {
+		par.remove();
+		$(`.btnAdd-tag`).off();
+		$(`.btnAdd-tag`).bind("click", Add_tag);
+	}
 };
 
 function Delete_comment(){ 
-	var par = $(this).parent().parent(); par.remove(); 
+	var par = $(this).parent().parent(); 
+
+	if(par.prop('id') != "") {
+		var request = $.ajax({
+		  	url: `/api/comments/${par.prop('id')}`,
+		      	type: 'DELETE'
+		});
+
+		request.done(function(response) {
+			par.remove();
+		});		
+	} else {
+		par.remove(); 
+	}
 };
 
 function Delete_promo(){ 
-	var par = $(this).parent().parent(); par.remove(); 
+	var par = $(this).parent().parent(); 
+
+	if(par.prop('id') != "") {
+		var request = $.ajax({
+		  	url: `/api/promotions/${par.prop('id')}`,
+		      	type: 'DELETE'
+		});
+
+		request.done(function(response) {
+			par.remove();
+		});		
+	} else {
+		par.remove(); 
+	}
 };
 
-(function(){ //Add, Save, Edit and Delete functions code 
+(function(){ //Add, Save, Edit and Delete functions code
+	Update_tags();
+	// Update_comments();
+	// Update_promos();
+
 	$(".btnEdit-tag").bind("click", Edit_tag); 
 	$(".btnDelete-tag").bind("click", Delete_tag); 
 	$(".btnAdd-tag").bind("click", Add_tag);

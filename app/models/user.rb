@@ -6,6 +6,10 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable, :trackable
   after_create :send_admin_mail
 
+  has_many :tags
+  has_many :comments
+  has_many :promotions
+
 
   def twitter
     identities.where( :provider => "twitter" ).first

@@ -18,8 +18,12 @@ Rails.application.routes.draw do
   get "/service/update" => "service#update"
   
   scope "/api" do
-
+    resources(:tags, only: [:index, :create, :destroy, :update])
+    resources(:comments, only: [:index, :create, :destroy, :update])
+    resources(:promotions, only: [:index, :create, :destroy, :update])
   end
+
+  post "welcome/contact" => "welcome#contact"
 
   
 

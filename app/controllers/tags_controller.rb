@@ -1,0 +1,49 @@
+class TagsController < ApplicationController
+	# before_action :authenticate_user!
+	skip_before_filter :verify_authenticity_token  
+
+	def index
+		tags = current_user.tags.all
+		
+		render json: tags
+	end
+
+	def create
+		tag = current_user.tags.create(tag_params)
+		
+		render json: tag
+	end
+
+	def destroy
+		tag = current_user.tags.find_by(id: params[:id])
+
+		unless tag
+			render json: {error: "tag not found"},
+			status: 404
+			return
+		end
+
+		tag.destroy
+
+		render json: tag
+	end
+
+	def update
+		tag = current_user.tags.find_by(id: params[:id])
+
+		unless tag
+			render json: {error: "tag not found"},
+			status: 404
+			return
+		end
+
+		tag.update(tag_params)
+
+		render json: tag
+	end
+
+	private
+		def tag_params
+			params.permit(:name, :for_comment, :for_promo)
+		end
+end
