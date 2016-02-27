@@ -1,6 +1,7 @@
 // Place all the behaviors and hooks related to the matching controller here.
 // All this logic will automatically be available in application.js.
 
+var init = true;
 var tag_editing = -1;
 var comment_editing = -1;
 var promo_editing = -1;
@@ -22,37 +23,35 @@ console.log("Starting Service...");
 (function poll(){
 	$.ajax({ url: "/service/update", success: function(data){
     	console.log("Polled");
-    	
-console.log(data);
 
-		// Card Panel
-		$(".card-followers").html(data.user.followers_count);
-		$(".card-friends").html(data.user.friends_count);
-		$(".card-listed").html(data.user.listed_count);
-		$(".card-favorites").html(data.user.favourites_count);
-		
-		// Tweets Panel
-		$("#tweets").empty();
+    	if(init == true || data.new == "true") {
+	    	init = false;
 
-		data.tweets.forEach(function(t) {
-			$.when($("#tweets").append(
-				                    `<div class="card card-avatar">
-				                      <div class="card-content">
-				                          <span class="card-title activator grey-text text-darken-4" id="${t.id}">
-				                          </span>
-				                      </div>
-				                    </div>`
-			                  	)).then( function() {
-									twttr.widgets.createTweet(
-										t.id_str,
-										document.getElementById(`${t.id}`),
-										{
-											// theme: 'dark'
-										}
-									);
-								});
-		});
+			// Card Panel
+			fill_card_panel(data.update);
 
+			// Tweets Panel
+			$("#tweets").empty();
+
+			data.update.tweets.forEach(function(t) {
+				$.when($("#tweets").append(
+					                    `<div class="card card-avatar">
+					                      <div class="card-content">
+					                          <span class="card-title activator grey-text text-darken-4" id="${t.id}">
+					                          </span>
+					                      </div>
+					                    </div>`
+				                  	)).then( function() {
+										twttr.widgets.createTweet(
+											t.id_str,
+											document.getElementById(`${t.id}`),
+											{
+												theme: 'blue'
+											}
+										);
+									});
+			});
+		}
 		
 		
  
@@ -62,9 +61,65 @@ console.log(data);
     	//Setup the next poll recursively
     	setTimeout(function(){
     		poll();
-    	}, 15 * 60000);
+    	},  60 * 1000);
   	}, dataType: "json"});
 })();
+
+function fill_card_panel(data) {
+	var followers_sign, followers_color;
+	var friends_sign, friends_color;
+	var listed_sign, listed_color;
+	var favourites_sign, favourites_color;
+
+	var followers_count_inc = data.user.followers_count - data.initial_user.followers_count;
+	var friends_count_inc = data.user.friends_count - data.initial_user.friends_count;
+	var listed_count_inc = data.user.listed_count - data.initial_user.listed_count;
+	var favourites_count_inc = data.user.favourites_count - data.initial_user.favourites_count;
+
+	if (followers_count_inc >= 0) {
+		followers_sign = "+";
+		followers_color = "blue-text text-darken-3";
+	} else {
+		followers_sign = "";
+		followers_color = "red-text";		
+	}
+
+	if (friends_count_inc >= 0) {
+		friends_sign = "+";
+		friends_color = "blue-text text-darken-3";
+	} else {
+		friends_sign = "";
+		friends_color = "red-text";		
+	}
+
+	if (listed_count_inc >= 0) {
+		listed_sign = "+";
+		listed_color = "blue-text text-darken-3";
+	} else {
+		listed_sign = "";
+		listed_color = "red-text";		
+	}
+
+	if (favourites_count_inc >= 0) {
+		favourites_sign = "+";
+		favourites_color = "blue-text text-darken-3";
+	} else {
+		favourites_sign = "";
+		favourites_color = "red-text";		
+	}
+
+	$(".card-followers").empty();
+	$(".card-followers").append(`<span class="white-text">${data.initial_user.followers_count}</span> <span class="${followers_color}">${followers_sign}${followers_count_inc}</span>`);
+
+	$(".card-friends").empty();
+	$(".card-friends").append(`<span class="white-text">${data.initial_user.friends_count}</span> <span class="${friends_color}">${friends_sign}${friends_count_inc}</span>`);
+
+	$(".card-listed").empty();
+	$(".card-listed").append(`<span class="white-text">${data.initial_user.listed_count}</span> <span class="${listed_color}">${listed_sign}${listed_count_inc}</span>`);
+
+	$(".card-favourites").empty();
+	$(".card-favourites").append(`<span class="white-text">${data.initial_user.favourites_count}</span> <span class="${favourites_color}">${favourites_sign}${favourites_count_inc}</span>`);
+}
 
 function Update_tags() {
 	var request = $.ajax({
