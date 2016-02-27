@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160226174953) do
+ActiveRecord::Schema.define(version: 20160227212937) do
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
@@ -89,6 +89,7 @@ ActiveRecord::Schema.define(version: 20160226174953) do
     t.integer  "user_id"
     t.boolean  "for_comment"
     t.boolean  "for_promo"
+    t.boolean  "for_retweet"
   end
 
   add_index "tags", ["user_id"], name: "index_tags_on_user_id"
@@ -118,6 +119,7 @@ ActiveRecord::Schema.define(version: 20160226174953) do
     t.datetime "last_request"
     t.text     "last_update"
     t.text     "first_update"
+    t.boolean  "for_retweet"
   end
 
   add_index "users", ["email"], name: "index_users_on_email"

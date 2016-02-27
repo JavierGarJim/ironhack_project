@@ -53,6 +53,6 @@ class TagsController < ApplicationController
 
 	private
 		def tag_params
-			params.permit(:name, :for_comment, :for_promo)
+			params.permit(:name, :for_retweet, :for_comment, :for_promo)
 		end
 end

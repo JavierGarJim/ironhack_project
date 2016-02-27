@@ -22,9 +22,15 @@ class ServiceController < ApplicationController
 
 				results = @client.search(tag.name, result_type: "recent").take(5)
 
-				results.each do |r|
-					if find_tweet(tweets, r[:attrs][:id_str]).nil? && r[:attrs][:retweeted_status].nil?
-						tweets.push(r[:attrs][:id_str])
+				results.each do |tweet|
+					if find_tweet(tweets, tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
+						tweets.push(tweet.attrs[:id_str])
+
+						if tag.for_retweet
+							if tweet.attrs[:retweeted] == false
+								@client.retweet(tweet)
+							end
+						end
 
 						if tag.for_comment
 
@@ -37,9 +43,9 @@ class ServiceController < ApplicationController
 		else
 			results = @client.home_timeline.take(10)
 
-			results.each do |r|
-				if find_tweet(tweets, r[:attrs][:id_str]).nil? && r[:attrs][:retweeted_status].nil?
-					tweets.push(r[:attrs][:id_str])
+			results.each do |tweet|
+				if find_tweet(tweets, tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
+					tweets.push(tweet.attrs[:id_str])
 				end
 			end
 

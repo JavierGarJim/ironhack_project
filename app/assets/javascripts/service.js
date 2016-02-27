@@ -184,6 +184,14 @@ function Update_tags() {
 			var tr = `
 				<tr id=${t.id}> 
 					<td>${t.name}</td>`;
+			if (t.for_retweet) {
+				tr += `
+					<td><input type="checkbox" id="" checked="checked"><label for="${t.id}-retweet-box"></label></td>`;
+			} else {
+				tr += `
+					<td><input type="checkbox" id=""><label for="${t.id}-retweet-box"></label></td>`;
+			}
+
 			if (t.for_comment) {
 				tr += `
 					<td><input type="checkbox" id="" checked="checked"><label for="${t.id}-comment-box"></label></td>`;
@@ -290,6 +298,9 @@ function Add_tag(){
 			`<tr id="0"> 
 			<td><input class="validate" type="text"></td>
 			<td>
+				<input type="checkbox" id="retweet-box"><label for="retweet-box"></label>
+			</td>
+			<td>
 				<input type="checkbox" id="comment-box"><label for="comment-box"></label>
 			</td>
 			<td>
@@ -362,9 +373,10 @@ function Save_tag(){
 	var par = $(this).parent().parent();
 	var id = par.prop('id');
 	var tdTag = par.children("td:nth-child(1)"); 
-	var tdComment = par.children("td:nth-child(2)"); 
-	var tdPromo = par.children("td:nth-child(3)");
-	var tdButtons = par.children("td:nth-child(4)");
+	var tdRetweet = par.children("td:nth-child(2)");
+	var tdComment = par.children("td:nth-child(3)");
+	var tdPromo = par.children("td:nth-child(4)");
+	var tdButtons = par.children("td:nth-child(5)");
 
 	if(tdTag.children("input[type=text]").val() == "") {
 		return;
@@ -377,6 +389,7 @@ function Save_tag(){
 			      	type: 'POST',
 			      	data: {
 			      		name: tdTag.children("input[type=text]").val(),
+			      		for_retweet: tdRetweet.children("input[type=checkbox]").is(':checked'),
 			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
 			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
 			      	}
@@ -387,6 +400,7 @@ function Save_tag(){
 			      	type: 'PUT',
 			      	data: {
 			      		name: tdTag.children("input[type=text]").val(),
+			      		for_retweet: tdRetweet.children("input[type=checkbox]").is(':checked'),
 			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
 			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
 			      	}
@@ -396,6 +410,8 @@ function Save_tag(){
 		request.done(function(response) {
 			par.attr('id', response.id);
 			tdTag.html(tdTag.children("input[type=text]").val());
+			tdRetweet.children("input").attr('id',"");
+			tdRetweet.children("label").attr('for',`${response.id}-retweet-box`);
 			tdComment.children("input").attr('id',"");
 			tdComment.children("label").attr('for',`${response.id}-comment-box`);
 			tdPromo.children("input").attr('id',"");
@@ -519,10 +535,12 @@ function Edit_tag(){
 		tag_editing = id;
 
 		var tdTag = par.children("td:nth-child(1)"); 
-		var tdComment = par.children("td:nth-child(2)"); 
-		var tdPromo = par.children("td:nth-child(3)");
-		var tdButtons = par.children("td:nth-child(4)");
+		var tdRetweet = par.children("td:nth-child(2)"); 
+		var tdComment = par.children("td:nth-child(3)"); 
+		var tdPromo = par.children("td:nth-child(4)");
+		var tdButtons = par.children("td:nth-child(5)");
 		tdTag.html("<input type='text' id='txtTag' value='"+tdTag.html()+"'>");
+		tdRetweet.children("input").attr('id',`${par.prop('id')}-retweet-box`);
 		tdComment.children("input").attr('id',`${par.prop('id')}-comment-box`);
 		tdPromo.children("input").attr('id',`${par.prop('id')}-promo-box`);
 		tdButtons.html(
