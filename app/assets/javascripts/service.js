@@ -31,7 +31,7 @@ console.log("Starting Service...");
 			fill_card_panel(data.update);
 
 			// Tweets Panel
-			$("#tweets").empty();
+			// $("#tweets").empty();
 
 			data.update.tweets.forEach(function(t) {
 				$.when($("#tweets").append(

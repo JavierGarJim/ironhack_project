@@ -39,20 +39,15 @@
 		                    <li><a class="user_label" href="<%= new_user_registration_path %>">Sign up</a></li>
 		                    <li><a class="user_label" href="<%= new_user_session_path %>">Log in</a></li>
 	                    <% else %>
-<!--                     		<li>
-                    			<a class='dropdown-button btn' href='#' data-activates='dropdown1'>Drop Me!</a>
-                			</li>
-
-                    		<ul id='dropdown1' class='dropdown-content'>
-						    	<li>
-						    		<a href="#!">Twitter</a>
-				    			</li>
-							    <li>
-							    	<a href="#!">two</a>
-						    	</li>
-						    	<li class="divider"></li>
-						  	</ul> -->
-
+	                    	<% if current_page?(service_index_path) %>
+	                    		<li>
+                					<% if current_identity.provider == "twitter" %>
+		                    			<a href="https://twitter.com/<%= current_identity.nickname %>" target="_blank">
+                							<i class="small fa fa-twitter-square white-text"></i>
+                						</a>
+                    				<% end %>
+	                			</li>
+							<% end %>
 	                    	<li>
 	                    		<a href="<%= destroy_user_session_path %>" data-method="delete">
 									<div class="chip">
