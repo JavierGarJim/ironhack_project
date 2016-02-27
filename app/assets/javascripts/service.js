@@ -20,8 +20,21 @@ function is_promo_editing() {
 
 console.log("Starting Service...");
 
-(function poll(){
-	$.ajax({ url: "/service/update", success: function(data){
+function set_timer() {
+	//Setup the next poll recursively
+	setTimeout(function(){
+		poll();
+	},  60 * 1000);
+}
+
+function poll(){
+	var request = $.ajax({
+	  	url: `/service/update`,
+	      	type: 'GET',
+	      	dataType: "json"
+	});
+
+	request.done(function(data) {
     	console.log("Polled");
 
     	if(init == true || data.new == "true") {
@@ -31,20 +44,20 @@ console.log("Starting Service...");
 			fill_card_panel(data.update);
 
 			// Tweets Panel
-			// $("#tweets").empty();
+			$("#tweets").empty();
 
 			data.update.tweets.forEach(function(t) {
 				$.when($("#tweets").append(
 					                    `<div class="card card-avatar">
 					                      <div class="card-content">
-					                          <span class="card-title activator grey-text text-darken-4" id="${t.id}">
+					                          <span class="card-title activator grey-text text-darken-4" id="${t}">
 					                          </span>
 					                      </div>
 					                    </div>`
 				                  	)).then( function() {
 										twttr.widgets.createTweet(
-											t.id_str,
-											document.getElementById(`${t.id}`),
+											`${t}`,
+											document.getElementById(`${t}`),
 											{
 												theme: 'blue'
 											}
@@ -53,17 +66,56 @@ console.log("Starting Service...");
 			});
 		}
 		
+		set_timer();
+  	});
+
+	request.fail(function(data) {
+		set_timer();
+	});
+
+	// $.ajax({ url: "/service/update", success: function(data) {
+ //    	console.log("Polled");
+
+ //    	if(init == true || data.new == "true") {
+	//     	init = false;
+
+	// 		// Card Panel
+	// 		fill_card_panel(data.update);
+
+	// 		// Tweets Panel
+	// 		$("#tweets").empty();
+
+	// 		data.update.tweets.forEach(function(t) {
+	// 			$.when($("#tweets").append(
+	// 				                    `<div class="card card-avatar">
+	// 				                      <div class="card-content">
+	// 				                          <span class="card-title activator grey-text text-darken-4" id="${t.id}">
+	// 				                          </span>
+	// 				                      </div>
+	// 				                    </div>`
+	// 			                  	)).then( function() {
+	// 									twttr.widgets.createTweet(
+	// 										t.id_str,
+	// 										document.getElementById(`${t.id}`),
+	// 										{
+	// 											theme: 'blue'
+	// 										}
+	// 									);
+	// 								});
+	// 		});
+	// 	}
+		
 		
  
 
 
 
-    	//Setup the next poll recursively
-    	setTimeout(function(){
-    		poll();
-    	},  60 * 1000);
-  	}, dataType: "json"});
-})();
+ //    	//Setup the next poll recursively
+ //    	setTimeout(function(){
+ //    		poll();
+ //    	},  60 * 1000);
+ //  	}, dataType: "json"});
+}
 
 function fill_card_panel(data) {
 	var followers_sign, followers_color;
@@ -612,6 +664,8 @@ function Delete_promo(){
 };
 
 (function(){ //Add, Save, Edit and Delete functions code
+	poll();
+
 	Update_tags();
 	Update_comments();
 	Update_promos();

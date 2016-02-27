@@ -35,3 +35,12 @@
 .btn-floating {
     background-color: #2196F3;
 }
+
+[type="checkbox"]:checked+label:before {
+    border-right: 2px solid #2196F3;
+    border-bottom: 2px solid #2196F3;
+}
+
+[type="checkbox"]+label:before {
+    border: 2px solid #2196F3;
+}

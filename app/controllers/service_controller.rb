@@ -13,34 +13,49 @@ class ServiceController < ApplicationController
 
 		puts "************************************************************************************"
 		puts "************************************************************************************"
-		puts "New Twitter request!"
-		puts "************************************************************************************"
-		puts "************************************************************************************"
-
-
-		user_info = @client.user
+		puts "New Twitter request"
 
 		unless current_user.tags.empty?
 			current_user.tags.each do |tag|
-				# tweets = @client.search(tag.name, result_type: "recent", count: 3)
+				puts "SEARCH"
+				puts tag.name
 
-				if tag.for_comment
+				results = @client.search(tag.name, result_type: "recent").take(5)
 
-				elsif tag.for_promo
+				results.each do |r|
+					if find_tweet(tweets, r[:attrs][:id_str]).nil? && r[:attrs][:retweeted_status].nil?
+						tweets.push(r[:attrs][:id_str])
 
+						if tag.for_comment
+
+						elsif tag.for_promo
+
+						end
+					end
 				end
-
-
 			end
 		else
-			tweets = @client.home_timeline.take(5)
+			results = @client.home_timeline.take(10)
+
+			results.each do |r|
+				if find_tweet(tweets, r[:attrs][:id_str]).nil? && r[:attrs][:retweeted_status].nil?
+					tweets.push(r[:attrs][:id_str])
+				end
+			end
+
+			puts "HOME_TIMELINE"
 		end
+
+		user_info = @client.user
+
+		puts "************************************************************************************"
+		puts "************************************************************************************"
 
 		if current_user.last_request.nil?
-			current_user.first_update = user_info
+			current_user.first_update = get_info(user_info)
 		end
 
-		current_user.last_update = {initial_user: current_user.first_update, user: user_info, tweets: tweets}
+		current_user.last_update = {initial_user: current_user.first_update, user: get_info(user_info), tweets: tweets}
 		
 		current_user.last_request = DateTime.now
 
@@ -80,32 +95,7 @@ class ServiceController < ApplicationController
 			@identity = current_user.identities.find_by(provider: "twitter")
 
 			@client = get_twitter_rest_client(@identity)
-
-			# @cache = Twitter::Cache.new(@client)
 		end
-
-	  	def find_tweets
-			# @stream_client = get_twitter_stream_client(@identity)
-
-			@tweets = []
-			# @tweets = @client.home_timeline
-
-			# topics = ["Pink Floyd", "The Beatles"]
-			# contador = 0
-			# @tweets = []
-
-			# @stream_client.filter(:track => topics.join(",")) do |object|
-			# 	contador += 1
-			# 	if contador > 2
-			# 		break
-		 #  		else
-		 #  			puts object.text if object.is_a?(Twitter::Tweet)
-		 #  			puts contador 
-		 #  			@tweets.push object if object.is_a?(Twitter::Tweet)
-		 #  			#@tweets = object.text if object.is_a?(Twitter::Tweet)
-		 #  		end
-		 #  	end
-  		end
 
 		def comment_params
 			params.require(:comment).permit(:template)
@@ -113,5 +103,20 @@ class ServiceController < ApplicationController
 
 		def comment_params
 			params.require(:comment).permit(:template)
+		end
+
+		def find_tweet(tweet_ids, tweet_id)
+			unless tweet_ids.empty?
+				tweet_ids.detect  {|id| id == tweet_id } 
+			end
+		end
+
+		def get_info(user_info)
+			{
+				followers_count: user_info.followers_count,
+				friends_count: user_info.friends_count,
+				listed_count: user_info.listed_count,
+				favourites_count: user_info.favourites_count
+			}
 		end
 end
