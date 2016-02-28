@@ -20,20 +20,20 @@ class ServiceController < ApplicationController
 				puts "SEARCH"
 				puts tag.name
 
-				results = @client.search(tag.name, result_type: "recent").take(5)
+				results = @client.search(tag.name, result_type: "recent")
 
 				results.each do |tweet|
 					if find_tweet(tweets, tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
 						tweets.push(tweet.attrs[:id_str])
 
 						if tag.for_retweet
-							if tweet.attrs[:retweeted] == false
+							if tweet.attrs[:retweeted] == "false"
 								@client.retweet(tweet)
 							end
 						end
 
 						if tag.for_comment
-
+							# @client.update("@#{reply_to.user.username} Not today.", in_reply_to_status_id: reply_to.id)
 						elsif tag.for_promo
 
 						end
@@ -41,7 +41,7 @@ class ServiceController < ApplicationController
 				end
 			end
 		else
-			results = @client.home_timeline.take(10)
+			results = @client.home_timeline
 
 			results.each do |tweet|
 				if find_tweet(tweets, tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?

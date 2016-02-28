@@ -24,7 +24,7 @@ function set_timer() {
 	//Setup the next poll recursively
 	setTimeout(function(){
 		poll();
-	},  60 * 1000);
+	},  15 * 60 * 1000);
 }
 
 function poll(){
@@ -44,7 +44,7 @@ function poll(){
 			fill_card_panel(data.update);
 
 			// Tweets Panel
-			$("#tweets").empty();
+			// $("#tweets").empty();
 
 			data.update.tweets.forEach(function(t) {
 				$.when($("#tweets").append(
@@ -130,7 +130,12 @@ function fill_card_panel(data) {
 
 	if (followers_count_inc >= 0) {
 		followers_sign = "+";
-		followers_color = "blue-text text-darken-3";
+		
+		if (followers_count_inc == 0) {
+			followers_color = "black-text";
+		} else {
+			followers_color = "blue-text text-darken-3";
+		}
 	} else {
 		followers_sign = "";
 		followers_color = "red-text";		
@@ -138,7 +143,12 @@ function fill_card_panel(data) {
 
 	if (friends_count_inc >= 0) {
 		friends_sign = "+";
-		friends_color = "blue-text text-darken-3";
+
+		if(friends_count_inc == 0) {
+			friends_color = "black-text";
+		} else {
+			friends_color = "blue-text text-darken-3";
+		}
 	} else {
 		friends_sign = "";
 		friends_color = "red-text";		
@@ -146,7 +156,12 @@ function fill_card_panel(data) {
 
 	if (listed_count_inc >= 0) {
 		listed_sign = "+";
-		listed_color = "blue-text text-darken-3";
+
+		if(listed_count_inc == 0) {
+			listed_color = "black-text";
+		} else {
+			listed_color = "blue-text text-darken-3";
+		}
 	} else {
 		listed_sign = "";
 		listed_color = "red-text";		
@@ -154,7 +169,12 @@ function fill_card_panel(data) {
 
 	if (favourites_count_inc >= 0) {
 		favourites_sign = "+";
-		favourites_color = "blue-text text-darken-3";
+
+		if (favourites_count_inc == 0) {
+			favourites_color = "black-text";
+		} else {
+			favourites_color = "blue-text text-darken-3";
+		}
 	} else {
 		favourites_sign = "";
 		favourites_color = "red-text";		
@@ -183,7 +203,9 @@ function Update_tags() {
 		response.forEach(function(t) {
 			var tr = `
 				<tr id=${t.id}> 
-					<td>${t.name}</td>`;
+					<td>
+						<input type="text" id="txtTag" value="${t.name}" readonly>
+					</td>`;
 			if (t.for_retweet) {
 				tr += `
 					<td><input type="checkbox" id="" checked="checked"><label for="${t.id}-retweet-box"></label></td>`;
@@ -214,10 +236,10 @@ function Update_tags() {
 
 			tr += `
 						<td>
-							<button class="btn-floating waves-effect waves-light ${t.id}-btnEdit-tag" name="action">
+							<button class="blue btn-floating waves-effect waves-light ${t.id}-btnEdit-tag" name="action">
 								<i class="mdi-editor-mode-edit"></i>
 							</button>
-							<button class="btn-floating waves-effect waves-light ${t.id}-btnDelete-tag" name="action">
+							<button class="blue btn-floating waves-effect waves-light ${t.id}-btnDelete-tag" name="action">
 								<i class="material-icons">delete</i>
 							</button>
 						</td>
@@ -240,13 +262,15 @@ function Update_comments() {
 		response.forEach(function(c) {
 			var tr = `
 				<tr id=${c.id}> 
-					<td>${c.template}</td>`;
+					<td>
+						<input type="text" id="txtComment" value="${c.template}" readonly>
+					</td>`;
 			tr += `
 						<td>
-							<button class="btn-floating waves-effect waves-light ${c.id}-btnEdit-comment" name="action">
+							<button class="blue btn-floating waves-effect waves-light ${c.id}-btnEdit-comment" name="action">
 								<i class="mdi-editor-mode-edit"></i>
 							</button>
-							<button class="btn-floating waves-effect waves-light ${c.id}-btnDelete-comment" name="action">
+							<button class="blue btn-floating waves-effect waves-light ${c.id}-btnDelete-comment" name="action">
 								<i class="material-icons">delete</i>
 							</button>
 						</td>
@@ -269,13 +293,15 @@ function Update_promos() {
 		response.forEach(function(p) {
 			var tr = `
 				<tr id=${p.id}> 
-					<td>${p.template}</td>`;
+					<td>
+						<input type="text" id="txtPromo" value="${p.template}" readonly>
+					</td>`;
 			tr += `
 						<td>
-							<button class="btn-floating waves-effect waves-light ${p.id}-btnEdit-promo" name="action">
+							<button class="blue btn-floating waves-effect waves-light ${p.id}-btnEdit-promo" name="action">
 								<i class="mdi-editor-mode-edit"></i>
 							</button>
-							<button class="btn-floating waves-effect waves-light ${p.id}-btnDelete-promo" name="action">
+							<button class="blue btn-floating waves-effect waves-light ${p.id}-btnDelete-promo" name="action">
 								<i class="material-icons">delete</i>
 							</button>
 						</td>
@@ -307,10 +333,10 @@ function Add_tag(){
 				<input type="checkbox" id="promo-box"><label for="promo-box"></label>
 			</td>
 			<td>
-				<button class="btn-floating waves-effect waves-light btnSave-tag" name="action">
+				<button class="blue btn-floating waves-effect waves-light btnSave-tag" name="action">
 					<i class="material-icons">done_all</i>
 				</button>
-				<button class="btn-floating waves-effect waves-light btnDelete-tag" name="action">
+				<button class="blue btn-floating waves-effect waves-light btnDelete-tag" name="action">
 					<i class="material-icons">delete</i>
 				</button>
 			</td>
@@ -331,10 +357,10 @@ function Add_comment(){
 			`<tr id="0"> 
 			<td><input class="validate" type="text"></td>
 			<td>
-				<button class="btn-floating waves-effect waves-light btnSave-comment" name="action">
+				<button class="blue btn-floating waves-effect waves-light btnSave-comment" name="action">
 					<i class="material-icons">done_all</i>
 				</button>
-				<button class="btn-floating waves-effect waves-light btnDelete-comment" name="action">
+				<button class="blue btn-floating waves-effect waves-light btnDelete-comment" name="action">
 					<i class="material-icons">delete</i>
 				</button>
 			</td>
@@ -355,10 +381,10 @@ function Add_promo(){
 			`<tr id="0"> 
 			<td><input class="validate" type="text"></td>
 			<td>
-				<button class="btn-floating waves-effect waves-light btnSave-promo" name="action">
+				<button class="blue btn-floating waves-effect waves-light btnSave-promo" name="action">
 					<i class="material-icons">done_all</i>
 				</button>
-				<button class="btn-floating waves-effect waves-light btnDelete-promo" name="action">
+				<button class="blue btn-floating waves-effect waves-light btnDelete-promo" name="action">
 					<i class="material-icons">delete</i>
 				</button>
 			</td>
@@ -409,7 +435,7 @@ function Save_tag(){
 
 		request.done(function(response) {
 			par.attr('id', response.id);
-			tdTag.html(tdTag.children("input[type=text]").val());
+			tdTag.html(`<input type="text" id="txtTag" value="${tdTag.children("input[type=text]").val()}" readonly>`);
 			tdRetweet.children("input").attr('id',"");
 			tdRetweet.children("label").attr('for',`${response.id}-retweet-box`);
 			tdComment.children("input").attr('id',"");
@@ -417,10 +443,10 @@ function Save_tag(){
 			tdPromo.children("input").attr('id',"");
 			tdPromo.children("label").attr('for',`${response.id}-promo-box`);
 			tdButtons.html(
-				`<button class="btn-floating waves-effect waves-light ${id}-btnEdit-tag" name="action">
+				`<button class="blue btn-floating waves-effect waves-light ${id}-btnEdit-tag" name="action">
 					<i class="mdi-editor-mode-edit"></i>
 				</button>
-				<button class="btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
+				<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
 					<i class="material-icons">delete</i>
 				</button>`
 				); 
@@ -462,12 +488,12 @@ function Save_comment(){
 
 		request.done(function(response) {
 			par.attr('id', response.id);
-			tdTemplate.html(tdTemplate.children("input[type=text]").val());
+			tdTemplate.html(`<input type="text" id="txtComment" value="${tdTemplate.children("input[type=text]").val()}" readonly>`);
 			tdButtons.html(
-				`<button class="btn-floating waves-effect waves-light ${id}-btnEdit-comment" name="action">
+				`<button class="blue btn-floating waves-effect waves-light ${id}-btnEdit-comment" name="action">
 					<i class="mdi-editor-mode-edit"></i>
 				</button>
-				<button class="btn-floating waves-effect waves-light ${id}-btnDelete-comment" name="action">
+				<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-comment" name="action">
 					<i class="material-icons">delete</i>
 				</button>`
 				); 
@@ -509,12 +535,12 @@ function Save_promo(){
 
 		request.done(function(response) {
 			par.attr('id', response.id);
-			tdTemplate.html(tdTemplate.children("input[type=text]").val());
+			tdTemplate.html(`<input type="text" id="txtPromo" value="${tdTemplate.children("input[type=text]").val()}" readonly>`);
 			tdButtons.html(
-				`<button class="btn-floating waves-effect waves-light ${id}-btnEdit-promo" name="action">
+				`<button class="blue btn-floating waves-effect waves-light ${id}-btnEdit-promo" name="action">
 					<i class="mdi-editor-mode-edit"></i>
 				</button>
-				<button class="btn-floating waves-effect waves-light ${id}-btnDelete-promo" name="action">
+				<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-promo" name="action">
 					<i class="material-icons">delete</i>
 				</button>`
 				); 
@@ -539,15 +565,15 @@ function Edit_tag(){
 		var tdComment = par.children("td:nth-child(3)"); 
 		var tdPromo = par.children("td:nth-child(4)");
 		var tdButtons = par.children("td:nth-child(5)");
-		tdTag.html("<input type='text' id='txtTag' value='"+tdTag.html()+"'>");
+		tdTag.html(`<input type="text" id="txtTag" value="${tdTag.children("input[type=text]").val()}">`);
 		tdRetweet.children("input").attr('id',`${par.prop('id')}-retweet-box`);
 		tdComment.children("input").attr('id',`${par.prop('id')}-comment-box`);
 		tdPromo.children("input").attr('id',`${par.prop('id')}-promo-box`);
 		tdButtons.html(
-			`<button class="btn-floating waves-effect waves-light ${id}-btnSave-tag" name="action">
+			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-tag" name="action">
 				<i class="material-icons">done_all</i>
 			</button>
-			<button class="btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
+			<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
 				<i class="material-icons">delete</i>
 			</button>
 			`
@@ -564,16 +590,16 @@ function Edit_comment(){
 		var par = $(this).parent().parent();
 		var id = par.prop('id');
 
-		t_editing = id;
+		comment_editing = id;
 
 		var tdTemplate = par.children("td:nth-child(1)");
 		var tdButtons = par.children("td:nth-child(2)");
-		tdTemplate.html("<input type='text' id='txtComment' value='"+tdTemplate.html()+"'>");
+		tdTemplate.html(`<input type="text" id="txtComment" value="${tdTemplate.children("input[type=text]").val()}">`);
 		tdButtons.html(
-			`<button class="btn-floating waves-effect waves-light ${id}-btnSave-comment" name="action">
+			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-comment" name="action">
 				<i class="material-icons">done_all</i>
 			</button>
-			<button class="btn-floating waves-effect waves-light ${id}-btnDelete-comment" name="action">
+			<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-comment" name="action">
 				<i class="material-icons">delete</i>
 			</button>
 			`
@@ -590,16 +616,16 @@ function Edit_promo(){
 		var par = $(this).parent().parent();
 		var id = par.prop('id');
 
-		t_editing = id;
+		promo_editing = id;
 
 		var tdTemplate = par.children("td:nth-child(1)");
 		var tdButtons = par.children("td:nth-child(2)");
-		tdTemplate.html("<input type='text' id='txtPromo' value='"+tdTemplate.html()+"'>");
+		tdTemplate.html(`<input type="text" id="txtPromo" value="${tdTemplate.children("input[type=text]").val()}">`);
 		tdButtons.html(
-			`<button class="btn-floating waves-effect waves-light ${id}-btnSave-promo" name="action">
+			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-promo" name="action">
 				<i class="material-icons">done_all</i>
 			</button>
-			<button class="btn-floating waves-effect waves-light ${id}-btnDelete-promo" name="action">
+			<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-promo" name="action">
 				<i class="material-icons">delete</i>
 			</button>
 			`
