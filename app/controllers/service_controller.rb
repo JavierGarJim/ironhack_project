@@ -2,40 +2,81 @@ class ServiceController < ApplicationController
 	before_action :authenticate_user!, :create_user
 
 	def update
+		puts "************************************************************************************"
+		puts "************************************************************************************"
+
 		user_info = []
 		tweets = []
 
-		if !current_user.last_request.nil? && current_user.last_request > 15.minutes.ago
-			render json: {new: "false", update: current_user.last_update}
+		if !current_user.last_request_time.nil? && current_user.last_request_time > 15.minutes.ago.utc
+			puts "*** Too early for a new Twitter request!"
+			puts "*** Current time: " + Time.now.utc.to_s
+			puts "*** Last request time: " + current_user.last_request_time.to_s
+
+			puts "************************************************************************************"
+			puts "************************************************************************************"
+
+			render json: build_response("old")
 
 			return
 		end
 
-		puts "************************************************************************************"
-		puts "************************************************************************************"
 		puts "New Twitter request"
 
 		unless current_user.tags.empty?
 			current_user.tags.each do |tag|
-				puts "SEARCH"
+				puts "*** SEARCH"
 				puts tag.name
 
 				results = @client.search(tag.name, result_type: "recent")
 
-				results.each do |tweet|
-					if find_tweet(tweets, tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
-						tweets.push(tweet.attrs[:id_str])
+				max_api_calls = 10
 
-						if tag.for_retweet
-							if tweet.attrs[:retweeted] == "false"
-								@client.retweet(tweet)
+				results.each do |tweet|
+					if find_tweet(tweet.attrs[:id_str]).nil?
+						current_user.tweets.create({id_str: tweet.attrs[:id_str]})
+
+						if tweet.attrs[:retweeted_status].nil?
+							if tag.for_retweet
+								puts "*** For retweet"
+								puts "*** retweeted: " + tweet.attrs[:retweeted].to_s
+
+								if tweet.attrs[:retweeted] == "false"
+									if max_api_calls > 0
+										@client.retweet(tweet)
+
+										max_api_calls -= 1
+
+										puts "*** Retweeted!"
+									end
+								end
 							end
 						end
-
+						
 						if tag.for_comment
-							# @client.update("@#{reply_to.user.username} Not today.", in_reply_to_status_id: reply_to.id)
-						elsif tag.for_promo
+							puts "*** For comment"
 
+							puts tweet.attrs[:user][:screen_name]
+
+							comment = current_user.comments.order("RANDOM()")[0]
+
+							if max_api_calls > 0
+								@client.update("Hi @#{tweet.attrs[:user][:screen_name]}, #{comment.template}", in_reply_to_status_id_str: tweet.attrs[:id_str])
+
+								max_api_calls -= 1
+
+								puts "*** Commmented!"
+							end
+						elsif tag.for_promo
+							puts "*** For promo"
+
+							if max_api_calls > 0
+								# @client.update("Hi @#{tweet.attrs[:user][:screen_name]}, #{comment.template}", in_reply_to_status_id_str: tweet.attrs[:id_str])
+
+								max_api_calls -= 1
+
+								puts "*** Promoted!"
+							end
 						end
 					end
 				end
@@ -44,30 +85,43 @@ class ServiceController < ApplicationController
 			results = @client.home_timeline
 
 			results.each do |tweet|
-				if find_tweet(tweets, tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
-					tweets.push(tweet.attrs[:id_str])
+
+puts "#############"
+puts find_tweet(tweet.attrs[:id_str])
+puts "#############"
+
+				if find_tweet(tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
+
+puts "-----------------------"
+					current_user.tweets.create({id_str: tweet.attrs[:id_str]})
 				end
 			end
 
-			puts "HOME_TIMELINE"
+			puts "*** HOME_TIMELINE"
 		end
 
 		user_info = @client.user
 
-		puts "************************************************************************************"
-		puts "************************************************************************************"
-
-		if current_user.last_request.nil?
-			current_user.first_update = get_info(user_info)
+		if current_user.last_request_time.nil?
+			current_user.initial_followers_count = user_info.attrs[:followers_count]
+    		current_user.initial_friends_count = user_info.attrs[:friends_count]
+			current_user.initial_listed_count = user_info.attrs[:listed_count]
+	    	current_user.initial_favourites_count = user_info.attrs[:favourites_count]
 		end
 
-		current_user.last_update = {initial_user: current_user.first_update, user: get_info(user_info), tweets: tweets}
+		current_user.followers_count = user_info.attrs[:followers_count]
+    	current_user.friends_count = user_info.attrs[:friends_count]
+		current_user.listed_count = user_info.attrs[:listed_count]
+    	current_user.favourites_count = user_info.attrs[:favourites_count]
 		
-		current_user.last_request = DateTime.now
+		current_user.last_request_time = DateTime.now.new_offset(0)
 
 		current_user.save
 
-		render json: {new: "true", update: current_user.last_update}
+		puts "************************************************************************************"
+		puts "************************************************************************************"
+
+		render json: build_response("new")
 	end
 
 	def index
@@ -111,10 +165,8 @@ class ServiceController < ApplicationController
 			params.require(:comment).permit(:template)
 		end
 
-		def find_tweet(tweet_ids, tweet_id)
-			unless tweet_ids.empty?
-				tweet_ids.detect  {|id| id == tweet_id } 
-			end
+		def find_tweet(id_str)
+			current_user.tweets.detect  {|t| t.id_str == id_str }
 		end
 
 		def get_info(user_info)
@@ -124,5 +176,27 @@ class ServiceController < ApplicationController
 				listed_count: user_info.listed_count,
 				favourites_count: user_info.favourites_count
 			}
+		end
+
+		def build_response(status)
+			response = {
+				status: status,
+				user: { 
+					initial_followers_count: current_user.initial_followers_count,
+    				initial_friends_count: current_user.initial_friends_count,
+	    			initial_listed_count: current_user.initial_listed_count,
+	    			initial_favourites_count: current_user.initial_favourites_count,
+	    			followers_count: current_user.followers_count,
+	    			friends_count: current_user.friends_count,
+					listed_count: current_user.listed_count,
+	    			favourites_count: current_user.favourites_count },
+	    		tweets: []
+			}
+
+			current_user.tweets.last(20).each do |t|
+				response[:tweets].push({id_str: t.id_str})
+			end
+
+			return response
 		end
 end

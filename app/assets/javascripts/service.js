@@ -24,7 +24,7 @@ function set_timer() {
 	//Setup the next poll recursively
 	setTimeout(function(){
 		poll();
-	},  15 * 60 * 1000);
+	},  30 * 1000);
 }
 
 function poll(){
@@ -36,28 +36,29 @@ function poll(){
 
 	request.done(function(data) {
     	console.log("Polled");
+    	console.log(data);
 
-    	if(init == true || data.new == "true") {
+    	if(init == true || data.status == "new") {
 	    	init = false;
 
 			// Card Panel
-			fill_card_panel(data.update);
+			fill_card_panel(data);
 
 			// Tweets Panel
 			// $("#tweets").empty();
 
-			data.update.tweets.forEach(function(t) {
-				$.when($("#tweets").append(
+			data.tweets.forEach(function(t) {
+				$.when($("#tweets").prepend(
 					                    `<div class="card card-avatar">
 					                      <div class="card-content">
-					                          <span class="card-title activator grey-text text-darken-4" id="${t}">
+					                          <span class="card-title activator grey-text text-darken-4" id="${t.id_str}">
 					                          </span>
 					                      </div>
 					                    </div>`
 				                  	)).then( function() {
 										twttr.widgets.createTweet(
-											`${t}`,
-											document.getElementById(`${t}`),
+											t.id_str,
+											document.getElementById(t.id_str),
 											{
 												theme: 'blue'
 											}
@@ -123,10 +124,10 @@ function fill_card_panel(data) {
 	var listed_sign, listed_color;
 	var favourites_sign, favourites_color;
 
-	var followers_count_inc = data.user.followers_count - data.initial_user.followers_count;
-	var friends_count_inc = data.user.friends_count - data.initial_user.friends_count;
-	var listed_count_inc = data.user.listed_count - data.initial_user.listed_count;
-	var favourites_count_inc = data.user.favourites_count - data.initial_user.favourites_count;
+	var followers_count_inc = data.user.followers_count - data.user.initial_followers_count;
+	var friends_count_inc = data.user.friends_count - data.user.initial_friends_count;
+	var listed_count_inc = data.user.listed_count - data.user.initial_listed_count;
+	var favourites_count_inc = data.user.favourites_count - data.user.initial_favourites_count;
 
 	if (followers_count_inc >= 0) {
 		followers_sign = "+";
@@ -181,16 +182,16 @@ function fill_card_panel(data) {
 	}
 
 	$(".card-followers").empty();
-	$(".card-followers").append(`<span class="white-text">${data.initial_user.followers_count}</span> <span class="${followers_color}">${followers_sign}${followers_count_inc}</span>`);
+	$(".card-followers").append(`<span class="white-text">${data.user.initial_followers_count}</span> <span class="${followers_color}">${followers_sign}${followers_count_inc}</span>`);
 
 	$(".card-friends").empty();
-	$(".card-friends").append(`<span class="white-text">${data.initial_user.friends_count}</span> <span class="${friends_color}">${friends_sign}${friends_count_inc}</span>`);
+	$(".card-friends").append(`<span class="white-text">${data.user.initial_friends_count}</span> <span class="${friends_color}">${friends_sign}${friends_count_inc}</span>`);
 
 	$(".card-listed").empty();
-	$(".card-listed").append(`<span class="white-text">${data.initial_user.listed_count}</span> <span class="${listed_color}">${listed_sign}${listed_count_inc}</span>`);
+	$(".card-listed").append(`<span class="white-text">${data.user.initial_listed_count}</span> <span class="${listed_color}">${listed_sign}${listed_count_inc}</span>`);
 
 	$(".card-favourites").empty();
-	$(".card-favourites").append(`<span class="white-text">${data.initial_user.favourites_count}</span> <span class="${favourites_color}">${favourites_sign}${favourites_count_inc}</span>`);
+	$(".card-favourites").append(`<span class="white-text">${data.user.initial_favourites_count}</span> <span class="${favourites_color}">${favourites_sign}${favourites_count_inc}</span>`);
 }
 
 function Update_tags() {
