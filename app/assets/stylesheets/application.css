@@ -41,10 +41,6 @@
     border: 2px solid #2196F3;
 }
 
-/*.green {
-    color: #4CAF50;
-}*/
-
 input[readonly] {
 	border-bottom: none;
 }
@@ -54,4 +50,13 @@ input[type=text]:focus:not([readonly]), input[type=password]:focus:not([readonly
     box-shadow: 0 1px 0 0 #2196F3;
 }
 
+.switch label input[type=checkbox]:checked+.lever {
+    background-color: #2196F3;
+}
+.switch label input[type=checkbox]:checked+.lever:after {
+    background-color: #2196F3;
+}
 
+.dropdown-content li>a, .dropdown-content li>span {
+    color: #2196F3;
+}

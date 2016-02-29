@@ -6060,7 +6060,8 @@ Vel = $ ? $.Velocity : Velocity,
                 }) : (a.Velocity.hook(g, "scaleX", .7), g.css({
                     top: c.starting_top
                 }), g.velocity({
-                    top: "10%",
+                    top: "9%",
+                    width: "30%",
                     opacity: 1,
                     scaleX: "1"
                 }, {

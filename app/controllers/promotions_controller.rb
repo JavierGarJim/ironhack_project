@@ -18,7 +18,7 @@ class PromotionsController < ApplicationController
 			return
 		else
 			promotion = current_user.promotions.create(promotion_params)
-		
+
 			render json: promotion
 		end
 	end
@@ -26,8 +26,12 @@ class PromotionsController < ApplicationController
 	def destroy
 		promotion = current_user.promotions.find_by(id: params[:id])
 
-		unless promotion
+		if promotion.nil?
 			render json: {error: "promotion not found"},
+			status: 404
+			return
+		elsif current_user.tags.find_by(promotion_id: params[:id])
+			render json: {error: "promotion being used"},
 			status: 404
 			return
 		end

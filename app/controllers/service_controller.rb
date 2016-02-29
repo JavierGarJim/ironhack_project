@@ -7,10 +7,10 @@ class ServiceController < ApplicationController
 
 		user_info = []
 		tweets = []
-
-		if !current_user.last_request_time.nil? && current_user.last_request_time > 15.minutes.ago.utc
+return
+		if !current_user.last_request_time.nil? && current_user.last_request_time > 5.minutes.ago.utc
 			puts "*** Too early for a new Twitter request!"
-			puts "*** Current time: " + Time.now.utc.to_s
+			puts "*** Current time:      " + Time.now.utc.to_s
 			puts "*** Last request time: " + current_user.last_request_time.to_s
 
 			puts "************************************************************************************"
@@ -20,6 +20,8 @@ class ServiceController < ApplicationController
 
 			return
 		end
+
+		puts "*** Current time:      " + Time.now.utc.to_s
 
 		puts "New Twitter request"
 
@@ -33,27 +35,25 @@ class ServiceController < ApplicationController
 				max_api_calls = 10
 
 				results.each do |tweet|
-					if find_tweet(tweet.attrs[:id_str]).nil?
+					if find_tweet(tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
 						current_user.tweets.create({id_str: tweet.attrs[:id_str]})
 
-						if tweet.attrs[:retweeted_status].nil?
-							if tag.for_retweet
-								puts "*** For retweet"
-								puts "*** retweeted: " + tweet.attrs[:retweeted].to_s
+						if tag.for_retweet
+							puts "*** For retweet"
+							puts "*** retweeted: " + tweet.attrs[:retweeted].to_s
 
-								if tweet.attrs[:retweeted] == "false"
-									if max_api_calls > 0
-										@client.retweet(tweet)
+							if tweet.attrs[:retweeted] == "false"
+								if max_api_calls > 0
+									@client.retweet(tweet)
 
-										max_api_calls -= 1
+									max_api_calls -= 1
 
-										puts "*** Retweeted!"
-									end
+									puts "*** Retweeted!"
 								end
 							end
 						end
-						
-						if tag.for_comment
+
+						if tag.for_comment && tweet.attrs[:in_reply_to_status_id].nil?
 							puts "*** For comment"
 
 							puts tweet.attrs[:user][:screen_name]
@@ -61,7 +61,9 @@ class ServiceController < ApplicationController
 							comment = current_user.comments.order("RANDOM()")[0]
 
 							if max_api_calls > 0
-								@client.update("Hi @#{tweet.attrs[:user][:screen_name]}, #{comment.template}", in_reply_to_status_id_str: tweet.attrs[:id_str])
+								puts "*** " + tweet.attrs[:user][:screen_name]
+
+								@client.update("Hi @#{tweet.attrs[:user][:screen_name]}, #{comment.template}", in_reply_to_status_id: tweet.attrs[:id])
 
 								max_api_calls -= 1
 
@@ -85,14 +87,7 @@ class ServiceController < ApplicationController
 			results = @client.home_timeline
 
 			results.each do |tweet|
-
-puts "#############"
-puts find_tweet(tweet.attrs[:id_str])
-puts "#############"
-
 				if find_tweet(tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
-
-puts "-----------------------"
 					current_user.tweets.create({id_str: tweet.attrs[:id_str]})
 				end
 			end
@@ -193,7 +188,9 @@ puts "-----------------------"
 	    		tweets: []
 			}
 
-			current_user.tweets.last(20).each do |t|
+			latest_tweets = current_user.tweets.where('created_at >= ? ', current_user.last_request_time - 5.minutes)
+
+			latest_tweets.each do |t|
 				response[:tweets].push({id_str: t.id_str})
 			end
 

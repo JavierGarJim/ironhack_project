@@ -23,64 +23,95 @@
 	</div>
 
 	<!--Navigation-->
-	 <div class="navbar-fixed">
+	<div id="sign-up-modal" class="modal">
+      	<div class="modal-content">
+		    <div class="">
+		    	<div class="row">
+				    <div class="input-field col s12 center">
+				    	<input class="sign-up-input" type="email" placeholder="your@email.com">
+				    	<label for="first_name">Sign up</label>
+				    </div>
+		    	</div>
+		    	<div class="row center">
+		    		<a class="blue btn"><i class="small fa fa-twitter white-text"></i></a>
+	    			<a class="blue waves-effect waves-light btn sign-up-button" href="/users/auth/twitter">Sign in with Twitter</a>
+		    	</div>
+		    </div>
+      	</div>
+    </div>
+
+	<div id="login-in-modal" class="modal">
+      <div class="modal-content">
+		    <div class="">
+		    	<div class="row">
+		    		<span>Log in</span>
+		    	</div>
+		    	<div class="row center">
+		    		<a class="blue btn"><i class="small fa fa-twitter white-text"></i></a>
+	    			<a class="blue waves-effect waves-light btn" href="/users/auth/twitter">Sign in with Twitter</a>
+		    	</div>
+		    </div>
+      </div>
+    </div>
+
+	<div class="navbar-fixed">
 	    <nav id="nav_f" class="default_color" role="navigation">
 	        <div class="nav_bar_container">
 	            <div class="nav-wrapper">
 	            <a href="/" id="logo-container" class="brand-logo">#ilabs</a>
-	                <ul class="right hide-on-med-and-down">
-	                	<% if current_page?(root_path) %>
-		                    <li><a href="#intro">About</a></li>
-		                    <li><a href="#team">Team</a></li>
-		                    <li><a href="#contact">Contact</a></li>
-		                    <li><a href="/service">Service</a></li>
-	                    <% end %>
-	                	<% if current_user.nil? %>
-		                    <li><a class="user_label" href="<%= new_user_registration_path %>">Sign up</a></li>
-		                    <li><a class="user_label" href="<%= new_user_session_path %>">Log in</a></li>
-	                    <% else %>
-	                    	<% if current_page?(service_index_path) %>
-	                    		<li>
-                					<% if current_identity.provider == "twitter" %>
-		                    			<a href="https://twitter.com/<%= current_identity.nickname %>" target="_blank">
-                							<i class="small fa fa-twitter-square white-text"></i>
-                						</a>
-                    				<% end %>
-	                			</li>
-							<% end %>
-	                    	<li>
-	                    		<a href="<%= destroy_user_session_path %>" data-method="delete">
-									<div class="chip">
-								    	<img src="<%= current_identity.image %>" alt="Contact Person">
-							    		<%= current_identity.nickname %>
-							  		</div>
-	                    			<span class="user_label logout_label">Log out</span>
-	                    		</a>
-                    		</li>
-	                    <% end %>
-	                </ul>
-	                <ul id="nav-mobile" class="side-nav">
-	                	<% if current_page?(root_path) %>
-		                    <li><a href="#intro">About</a></li>
-		                    <li><a href="#team">Team</a></li>
-		                    <li><a href="#contact">Contact</a></li>
-		                    <li><a href="/service">Service</a></li>
-	                    <% end %>
-	                	<% if current_user.nil? %>
-		                    <li><a class="user_label" href="<%= new_user_registration_path %>">Sign up</a></li>
-		                    <li><a class="user_label" href="<%= new_user_session_path %>">Log in</a></li>
-	                    <% else %>
-	                    	<li>
-	                    		<a href="<%= destroy_user_session_path %>" data-method="delete">
-									<div class="chip">
-								    	<img src="<%= current_identity.image %>" alt="Contact Person">
-							    		<%= current_identity.nickname %>
-							  		</div>
-	                    			<span class="user_label logout_label">Log out</span>
-	                    		</a>
-                    		</li>
-	                    <% end %>
-	                </ul>
+                <ul class="right hide-on-med-and-down">
+                	<% if current_page?(root_path) %>
+	                    <li><a href="#intro">About</a></li>
+	                    <li><a href="#team">Team</a></li>
+	                    <li><a href="#contact">Contact</a></li>
+	                    <li><a href="/service">Service</a></li>
+                    <% end %>
+                	<% if current_user.nil? %>
+	                    <li><a class="user_label modal-trigger" href="#sign-up-modal">Sign up</a></li>
+	                    <li><a class="user_label modal-trigger" href="#login-in-modal">Log in</a></li>
+                    <% else %>
+                    	<% if current_page?(service_index_path) %>
+                    		<li>
+            					<% if current_identity.provider == "twitter" %>
+	                    			<a href="https://twitter.com/<%= current_identity.nickname %>" target="_blank">
+            							<i class="small fa fa-twitter white-text"></i>
+            						</a>
+                				<% end %>
+                			</li>
+						<% end %>
+                    	<li>
+                    		<a href="<%= destroy_user_session_path %>" data-method="delete">
+								<div class="chip">
+							    	<img src="<%= current_identity.image %>" alt="Contact Person">
+						    		<%= current_identity.nickname %>
+						  		</div>
+                    			<span class="user_label logout_label">Sign out</span>
+                    		</a>
+                		</li>
+                    <% end %>
+                </ul>
+                <ul id="nav-mobile" class="side-nav">
+                	<% if current_page?(root_path) %>
+	                    <li><a href="#intro">About</a></li>
+	                    <li><a href="#team">Team</a></li>
+	                    <li><a href="#contact">Contact</a></li>
+	                    <li><a href="/service">Service</a></li>
+                    <% end %>
+                	<% if current_user.nil? %>
+	                    <li><a class="user_label modal-trigger" href="#sign-up-modal">Sign up</a></li>
+	                    <li><a class="user_label modal-trigger" href="#login-in-modal">Log in</a></li>
+                    <% else %>
+                    	<li>
+                    		<a href="<%= destroy_user_session_path %>" data-method="delete">
+								<div class="chip">
+							    	<img src="<%= current_identity.image %>" alt="Contact Person">
+						    		<%= current_identity.nickname %>
+						  		</div>
+                    			<span class="user_label logout_label">Sign out</span>
+                    		</a>
+                		</li>
+                    <% end %>
+                </ul>
 	            <a href="/" data-activates="nav-mobile" class="button-collapse"><i class="mdi-navigation-menu"></i></a>
 	            </div>
 	        </div>
@@ -88,6 +119,6 @@
 	</div>
 
 	<%= yield %>
-
-</body>
+	
+	<script type="text/javascript" src="assets/welcome.js"></script>
 </html>

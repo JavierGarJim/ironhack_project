@@ -5,6 +5,7 @@ var init = true;
 var tag_editing = -1;
 var comment_editing = -1;
 var promo_editing = -1;
+var tweets_count = 0;
 
 function is_tag_editing() {
 	return tag_editing;
@@ -28,6 +29,7 @@ function set_timer() {
 }
 
 function poll(){
+return;
 	var request = $.ajax({
 	  	url: `/service/update`,
 	      	type: 'GET',
@@ -35,7 +37,6 @@ function poll(){
 	});
 
 	request.done(function(data) {
-    	console.log("Polled");
     	console.log(data);
 
     	if(init == true || data.status == "new") {
@@ -45,7 +46,13 @@ function poll(){
 			fill_card_panel(data);
 
 			// Tweets Panel
-			// $("#tweets").empty();
+			console.log(tweets_count)
+
+			if (tweets_count > 100) {
+				$("#tweets").empty();
+
+				tweets_count = 0;
+			}
 
 			data.tweets.forEach(function(t) {
 				$.when($("#tweets").prepend(
@@ -63,6 +70,8 @@ function poll(){
 												theme: 'blue'
 											}
 										);
+
+										tweets_count++;
 									});
 			});
 		}
@@ -73,49 +82,6 @@ function poll(){
 	request.fail(function(data) {
 		set_timer();
 	});
-
-	// $.ajax({ url: "/service/update", success: function(data) {
- //    	console.log("Polled");
-
- //    	if(init == true || data.new == "true") {
-	//     	init = false;
-
-	// 		// Card Panel
-	// 		fill_card_panel(data.update);
-
-	// 		// Tweets Panel
-	// 		$("#tweets").empty();
-
-	// 		data.update.tweets.forEach(function(t) {
-	// 			$.when($("#tweets").append(
-	// 				                    `<div class="card card-avatar">
-	// 				                      <div class="card-content">
-	// 				                          <span class="card-title activator grey-text text-darken-4" id="${t.id}">
-	// 				                          </span>
-	// 				                      </div>
-	// 				                    </div>`
-	// 			                  	)).then( function() {
-	// 									twttr.widgets.createTweet(
-	// 										t.id_str,
-	// 										document.getElementById(`${t.id}`),
-	// 										{
-	// 											theme: 'blue'
-	// 										}
-	// 									);
-	// 								});
-	// 		});
-	// 	}
-		
-		
- 
-
-
-
- //    	//Setup the next poll recursively
- //    	setTimeout(function(){
- //    		poll();
- //    	},  60 * 1000);
- //  	}, dataType: "json"});
 }
 
 function fill_card_panel(data) {
@@ -203,35 +169,36 @@ function Update_tags() {
 	request.done(function(response) {
 		response.forEach(function(t) {
 			var tr = `
-				<tr id=${t.id}> 
-					<td>
-						<input type="text" id="txtTag" value="${t.name}" readonly>
-					</td>`;
+				<tr id="${t.id}"> 
+					<td><input type="text" value="${t.name}" readonly></td>`;
+
 			if (t.for_retweet) {
-				tr += `
-					<td><input type="checkbox" id="" checked="checked"><label for="${t.id}-retweet-box"></label></td>`;
+				tr += `<td><input type="checkbox" id="${t.id}-retweet-box" checked disabled><label for="${t.id}-retweet-box"></label></td>`;
 			} else {
-				tr += `
-					<td><input type="checkbox" id=""><label for="${t.id}-retweet-box"></label></td>`;
+				tr += `<td><input type="checkbox" id="${t.id}-retweet-box" disabled><label for="${t.id}-retweet-box"></label></td>`;
 			}
 
-			if (t.for_comment) {
-				tr += `
-					<td><input type="checkbox" id="" checked="checked"><label for="${t.id}-comment-box"></label></td>`;
+			if (t.comment) {
+				tr += `<td><select class="${t.comment.id}-comment-select"><option value="${t.comment.id}">${t.comment.id}</option></select></td>`;
 			} else {
-				tr += `
-					<td><input type="checkbox" id=""><label for="${t.id}-comment-box"></label></td>`;
+				tr += `<td><select class="none-comment-select"><option value="none">none</option></select></td>`;
 			}
 
-			if (t.for_promo) {
+			if (t.promotion) {
+				tr += `<td><select class="${t.promotion.id}-promo-select"><option value="${t.promotion.id}">${t.promotion.id}</option></select></td>`;
+			} else {
+				tr += `<td><select class="none-promo-select"><option value="none">none</option></select></td>`;
+			}
+
+			if (t.actived) {
 				tr += `
 					<td>
-						<input type="checkbox" id="" checked="checked"><label for="${t.id}-promo-box"></label>
+						<div class="switch"><label><input type="checkbox" checked disabled><span class="lever"></span></label></div>
 					</td>`;
 			} else {
 				tr += `
 					<td>
-						<input type="checkbox" id=""><label for="${t.id}-promo-box"></label>
+						<div class="switch"><label><input type="checkbox" disabled><span class="lever"></span></label></div>
 					</td>`;				
 			}
 
@@ -245,10 +212,19 @@ function Update_tags() {
 							</button>
 						</td>
 					</tr>`;
-
-			$(".tblData-search tbody").append(tr);
-			$(`.${t.id}-btnEdit-tag`).bind("click", Edit_tag);	
-			$(`.${t.id}-btnDelete-tag`).bind("click", Delete_tag);
+			
+			$('.tblData-search tbody').prepend(tr);
+			var par = $(`#${t.id}`);
+			var tdComment = par.children("td:nth-child(3)");
+			var tdPromo = par.children("td:nth-child(4)");
+			var tdStatus = par.children("td:nth-child(5)");
+			tdComment.children("select").material_select();
+			tdComment.children("div").children("input[type=text]").prop('disabled', true);
+			tdPromo.children("select").material_select();
+			tdPromo.children("div").children("input[type=text]").prop('disabled', true);
+			var tdButtons = par.children("td:nth-child(6)");
+			tdButtons.children(`.${t.id}-btnEdit-tag`).bind("click", Edit_tag);	
+			tdButtons.children(`.${t.id}-btnDelete-tag`).bind("click", Delete_tag);
 		});
 	});	
 }
@@ -259,13 +235,13 @@ function Update_comments() {
 	      	type: 'GET'
 	});
 
-	request.done(function(response) {
-		response.forEach(function(c) {
+	request.done(function(comments) {
+		comments.forEach(function(c) {
 			var tr = `
-				<tr id=${c.id}> 
-					<td>
-						<input type="text" id="txtComment" value="${c.template}" readonly>
-					</td>`;
+				<tr id="${c.id}"> 
+					<td><input type="text" value="${c.template}" readonly></td>
+					<td>${c.id}</td>
+					`;
 			tr += `
 						<td>
 							<button class="blue btn-floating waves-effect waves-light ${c.id}-btnEdit-comment" name="action">
@@ -280,7 +256,7 @@ function Update_comments() {
 			$(".tblData-comment tbody").append(tr);
 			$(`.${c.id}-btnEdit-comment`).bind("click", Edit_comment);	
 			$(`.${c.id}-btnDelete-comment`).bind("click", Delete_comment);
-		});
+		});		
 	});	
 }
 
@@ -290,13 +266,13 @@ function Update_promos() {
 	      	type: 'GET'
 	});
 
-	request.done(function(response) {
-		response.forEach(function(p) {
+	request.done(function(promotions) {
+		promotions.forEach(function(p) {
 			var tr = `
-				<tr id=${p.id}> 
-					<td>
-						<input type="text" id="txtPromo" value="${p.template}" readonly>
-					</td>`;
+					<tr id="${p.id}"> 
+					<td><input type="text" value="${p.template}" readonly></td>
+					<td>${p.id}</td>
+					`;
 			tr += `
 						<td>
 							<button class="blue btn-floating waves-effect waves-light ${p.id}-btnEdit-promo" name="action">
@@ -321,30 +297,56 @@ function Add_tag(){
 	} else {
 		tag_editing = 0;
 
-		$(".tblData-search tbody").append( 
-			`<tr id="0"> 
-			<td><input class="validate" type="text"></td>
-			<td>
-				<input type="checkbox" id="retweet-box"><label for="retweet-box"></label>
-			</td>
-			<td>
-				<input type="checkbox" id="comment-box"><label for="comment-box"></label>
-			</td>
-			<td>
-				<input type="checkbox" id="promo-box"><label for="promo-box"></label>
-			</td>
-			<td>
-				<button class="blue btn-floating waves-effect waves-light btnSave-tag" name="action">
-					<i class="material-icons">done_all</i>
-				</button>
-				<button class="blue btn-floating waves-effect waves-light btnDelete-tag" name="action">
-					<i class="material-icons">delete</i>
-				</button>
-			</td>
-			</tr>`
-			); 
-		$(`.btnSave-tag`).bind("click", Save_tag);	
-		$(`.btnDelete-tag`).bind("click", Delete_tag);
+		var comments_request = $.ajax({
+		  	url: `/api/comments`,
+		      	type: 'GET'
+		});
+
+		comments_request.done(function(comments) {
+			var promotions_request = $.ajax({
+			  	url: `/api/promotions`,
+			      	type: 'GET'
+			});
+
+			promotions_request.done(function(promotions) {
+				$(".tblData-search tbody").prepend( 
+													`<tr id="0"> 
+													<td><input class="validate" type="text"></td>
+													<td>
+														<input type="checkbox" id="retweet-box"><label for="retweet-box"></label>
+													</td>
+													<td>
+														<select class="comment-select"><option value="none">none</option></select>
+													</td>
+													<td>
+														<select class="promo-select"><option value="none">none</option></select>
+													</td>
+													<td>
+														<div class="switch"><label><input type="checkbox" checked><span class="lever"></span></label></div>
+													</td>
+													<td>
+														<button class="blue btn-floating waves-effect waves-light btnSave-tag" name="action">
+															<i class="material-icons">done_all</i>
+														</button>
+														<button class="blue btn-floating waves-effect waves-light btnDelete-tag" name="action">
+															<i class="material-icons">delete</i>
+														</button>
+													</td>
+													</tr>`
+													);
+
+				comments.forEach(function(c) {
+					$('.comment-select').append(`<option value="${c.id}">${c.id}</option>`);
+				});
+				promotions.forEach(function(p) {
+					$('.promo-select').append(`<option value="${p.id}">${p.id}</option>`);
+				});
+				$('.comment-select').material_select();
+				$('.promo-select').material_select();
+				$(`.btnSave-tag`).bind("click", Save_tag);	
+				$(`.btnDelete-tag`).bind("click", Delete_tag);
+			});
+		});
 	}
 };
 
@@ -354,9 +356,10 @@ function Add_comment(){
 	} else {
 		comment_editing = 0;
 
-		$(".tblData-comment tbody").append( 
+		$(".tblData-comment tbody").prepend( 
 			`<tr id="0"> 
 			<td><input class="validate" type="text"></td>
+			<td></td>
 			<td>
 				<button class="blue btn-floating waves-effect waves-light btnSave-comment" name="action">
 					<i class="material-icons">done_all</i>
@@ -378,9 +381,10 @@ function Add_promo(){
 	} else {
 		promo_editing = 0;
 
-		$(".tblData-promo tbody").append( 
+		$(".tblData-promo tbody").prepend( 
 			`<tr id="0"> 
 			<td><input class="validate" type="text"></td>
+			<td></td>
 			<td>
 				<button class="blue btn-floating waves-effect waves-light btnSave-promo" name="action">
 					<i class="material-icons">done_all</i>
@@ -403,7 +407,8 @@ function Save_tag(){
 	var tdRetweet = par.children("td:nth-child(2)");
 	var tdComment = par.children("td:nth-child(3)");
 	var tdPromo = par.children("td:nth-child(4)");
-	var tdButtons = par.children("td:nth-child(5)");
+	var tdStatus = par.children("td:nth-child(5)");
+	var tdButtons = par.children("td:nth-child(6)");
 
 	if(tdTag.children("input[type=text]").val() == "") {
 		return;
@@ -416,9 +421,10 @@ function Save_tag(){
 			      	type: 'POST',
 			      	data: {
 			      		name: tdTag.children("input[type=text]").val(),
-			      		for_retweet: tdRetweet.children("input[type=checkbox]").is(':checked'),
-			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
-			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      		for_retweet: tdRetweet.children("input[type=checkbox]").is(":checked"),
+			      		comment_id: tdComment.children("div").children("input[type=text]").prop("value"),
+			      		promotion_id: tdPromo.children("div").children("input[type=text]").prop("value"),
+			      		actived: tdStatus.children("div").children("label").children("input[type=checkbox]").is(":checked")
 			      	}
 			});
 		} else {
@@ -427,32 +433,60 @@ function Save_tag(){
 			      	type: 'PUT',
 			      	data: {
 			      		name: tdTag.children("input[type=text]").val(),
-			      		for_retweet: tdRetweet.children("input[type=checkbox]").is(':checked'),
-			      		for_comment: tdComment.children("input[type=checkbox]").is(':checked'),
-			      		for_promo: tdPromo.children("input[type=checkbox]").is(':checked')
+			      		for_retweet: tdRetweet.children("input[type=checkbox]").is(":checked"),
+			      		comment_id: tdComment.children("div").children("input[type=text]").prop("value"),
+			      		promotion_id: tdPromo.children("div").children("input[type=text]").prop("value"),
+			      		actived: tdStatus.children("div").children("label").children("input[type=checkbox]").is(":checked")
 			      	}
 			});			
 		}
 
 		request.done(function(response) {
 			par.attr('id', response.id);
-			tdTag.html(`<input type="text" id="txtTag" value="${tdTag.children("input[type=text]").val()}" readonly>`);
-			tdRetweet.children("input").attr('id',"");
+			tdTag.html(`<input type="text" value="${response.name}" readonly>`);
+			tdRetweet.children("input").attr('id', `${response.id}-retweet-box`);
 			tdRetweet.children("label").attr('for',`${response.id}-retweet-box`);
-			tdComment.children("input").attr('id',"");
-			tdComment.children("label").attr('for',`${response.id}-comment-box`);
-			tdPromo.children("input").attr('id',"");
-			tdPromo.children("label").attr('for',`${response.id}-promo-box`);
+			tdRetweet.children("input").prop('disabled', true);
+			
+			tdComment.empty();
+
+			if(response.comment) {
+				tdComment.append(`<select class="${response.comment.id}-comment-select"></select>`);
+				tdComment.children("select").append(`<option value="${response.comment.id}">${response.comment.id}</option>`);
+			} else {
+				tdComment.append(`<select class="none-comment-select"></select>`);
+				tdComment.children("select").append(`<option value="none">none</option>`);
+			}
+	
+			tdComment.children("select").material_select();
+
+			tdComment.children("div").children("input[type=text]").prop('disabled', true);
+
+			tdPromo.empty();
+
+			if(response.promotion) {
+				tdPromo.append(`<select class="${response.promotion.id}-promo-select"></select>`);
+				tdPromo.children("select").append(`<option value="${response.promotion.id}">${response.promotion.id}</option>`);
+			} else {
+				tdPromo.append(`<select class="none-promo-select"></select>`);
+				tdPromo.children("select").append(`<option value="none">none</option>`);
+			}
+	
+			tdPromo.children("select").material_select();
+
+			tdPromo.children("div").children("input[type=text]").prop('disabled', true);
+		
+			tdStatus.children("div").children("label").children("input[type=checkbox]").prop('disabled', true);
 			tdButtons.html(
-				`<button class="blue btn-floating waves-effect waves-light ${id}-btnEdit-tag" name="action">
+				`<button class="blue btn-floating waves-effect waves-light ${response.id}-btnEdit-tag" name="action">
 					<i class="mdi-editor-mode-edit"></i>
 				</button>
-				<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
+				<button class="blue btn-floating waves-effect waves-light ${response.id}-btnDelete-tag" name="action">
 					<i class="material-icons">delete</i>
 				</button>`
 				); 
-			$(`.${id}-btnEdit-tag`).bind("click", Edit_tag); 
-			$(`.${id}-btnDelete-tag`).bind("click", Delete_tag);
+			tdButtons.children(`.${response.id}-btnEdit-tag`).bind("click", Edit_tag); 
+			tdButtons.children(`.${response.id}-btnDelete-tag`).bind("click", Delete_tag);
 			tag_editing = -1;
 		});
 	}
@@ -462,7 +496,8 @@ function Save_comment(){
 	var par = $(this).parent().parent();
 	var id = par.prop('id');
 	var tdTemplate = par.children("td:nth-child(1)");
-	var tdButtons = par.children("td:nth-child(2)");
+	var tdId = par.children("td:nth-child(2)");
+	var tdButtons = par.children("td:nth-child(3)");
 
 	if(tdTemplate.children("input[type=text]").val() == "") {
 		return;
@@ -489,7 +524,8 @@ function Save_comment(){
 
 		request.done(function(response) {
 			par.attr('id', response.id);
-			tdTemplate.html(`<input type="text" id="txtComment" value="${tdTemplate.children("input[type=text]").val()}" readonly>`);
+			tdTemplate.html(`<input type="text" value="${response.template}" readonly>`);
+			tdId.html(`${response.id}`);
 			tdButtons.html(
 				`<button class="blue btn-floating waves-effect waves-light ${id}-btnEdit-comment" name="action">
 					<i class="mdi-editor-mode-edit"></i>
@@ -498,8 +534,8 @@ function Save_comment(){
 					<i class="material-icons">delete</i>
 				</button>`
 				); 
-			$(`.${id}-btnEdit-comment`).bind("click", Edit_comment); 
-			$(`.${id}-btnDelete-comment`).bind("click", Delete_comment);
+			tdButtons.children(`.${id}-btnEdit-comment`).bind("click", Edit_comment); 
+			tdButtons.children(`.${id}-btnDelete-comment`).bind("click", Delete_comment);
 			comment_editing = -1;
 		});
 	}
@@ -509,7 +545,8 @@ function Save_promo(){
 	var par = $(this).parent().parent();
 	var id = par.prop('id');
 	var tdTemplate = par.children("td:nth-child(1)");
-	var tdButtons = par.children("td:nth-child(2)");
+	var tdId = par.children("td:nth-child(2)");
+	var tdButtons = par.children("td:nth-child(3)");
 
 	if(tdTemplate.children("input[type=text]").val() == "") {
 		return;
@@ -536,7 +573,8 @@ function Save_promo(){
 
 		request.done(function(response) {
 			par.attr('id', response.id);
-			tdTemplate.html(`<input type="text" id="txtPromo" value="${tdTemplate.children("input[type=text]").val()}" readonly>`);
+			tdTemplate.html(`<input type="text" value="${tdTemplate.children("input[type=text]").val()}" readonly>`);
+			tdId.html(`${response.id}`);
 			tdButtons.html(
 				`<button class="blue btn-floating waves-effect waves-light ${id}-btnEdit-promo" name="action">
 					<i class="mdi-editor-mode-edit"></i>
@@ -544,9 +582,9 @@ function Save_promo(){
 				<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-promo" name="action">
 					<i class="material-icons">delete</i>
 				</button>`
-				); 
-			$(`.${id}-btnEdit-promo`).bind("click", Edit_promo); 
-			$(`.${id}-btnDelete-promo`).bind("click", Delete_promo);
+				);
+			tdButtons.children(`.${id}-btnEdit-promo`).bind("click", Edit_promo); 
+			tdButtons.children(`.${id}-btnDelete-promo`).bind("click", Delete_promo);
 			promo_editing = -1;
 		});
 	}
@@ -565,22 +603,82 @@ function Edit_tag(){
 		var tdRetweet = par.children("td:nth-child(2)"); 
 		var tdComment = par.children("td:nth-child(3)"); 
 		var tdPromo = par.children("td:nth-child(4)");
-		var tdButtons = par.children("td:nth-child(5)");
-		tdTag.html(`<input type="text" id="txtTag" value="${tdTag.children("input[type=text]").val()}">`);
-		tdRetweet.children("input").attr('id',`${par.prop('id')}-retweet-box`);
-		tdComment.children("input").attr('id',`${par.prop('id')}-comment-box`);
-		tdPromo.children("input").attr('id',`${par.prop('id')}-promo-box`);
-		tdButtons.html(
-			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-tag" name="action">
-				<i class="material-icons">done_all</i>
-			</button>
-			<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
-				<i class="material-icons">delete</i>
-			</button>
-			`
-			); 
-		$(`.${id}-btnSave-tag`).bind("click", Save_tag);
-		$(`.${id}-btnDelete-tag`).bind("click", Delete_tag);
+		var tdStatus = par.children("td:nth-child(5)");
+		var tdButtons = par.children("td:nth-child(6)");
+
+		var comments_request = $.ajax({
+		  	url: `/api/comments`,
+		      	type: 'GET'
+		});
+
+		comments_request.done(function(comments) {
+			var promotions_request = $.ajax({
+			  	url: `/api/promotions`,
+			      	type: 'GET'
+			});
+
+			promotions_request.done(function(promotions) {
+				tdTag.html(`<input type="text" id="txtTag" value="${tdTag.children("input[type=text]").val()}">`);
+				tdRetweet.children("input").prop('disabled', false);
+
+				var current_comment_id = tdComment.children("div").children("select").children("option").prop("value");
+
+				tdComment.empty();
+
+				tdComment.append(`<select class="comment-select"></select>`);
+
+				comments.forEach(function(c) {
+					if(c.id != current_comment_id) {
+						tdComment.children("select").append(`<option value="${c.id}">${c.id}</option>`);
+					} else {
+						tdComment.children("select").prepend(`<option value="${c.id}">${c.id}</option>`);
+					}
+				});
+
+				if(current_comment_id == "none") {
+					tdComment.children("select").prepend(`<option value="none">none</option>`);
+				} else {
+					tdComment.children("select").append(`<option value="none">none</option>`);
+				}
+
+				tdComment.children("select").material_select();
+
+				var current_promo_id = tdPromo.children("div").children("select").children("option").prop("value");
+
+				tdPromo.empty();
+
+				tdPromo.append(`<select class="promo-select"></select>`);
+
+				promotions.forEach(function(p) {
+					if(p.id != current_promo_id) {
+						tdPromo.children("select").append(`<option value="${p.id}">${p.id}</option>`);
+					} else {
+						tdPromo.children("select").prepend(`<option value="${p.id}">${p.id}</option>`);
+					}
+				});
+
+				if(current_promo_id == "none") {
+					tdPromo.children("select").prepend(`<option value="none">none</option>`);
+				} else {
+					tdPromo.children("select").append(`<option value="none">none</option>`);
+				}
+
+				tdPromo.children("select").material_select();
+
+				tdStatus.children("div").children("label").children("input[type=checkbox]").prop('disabled', false);
+				tdButtons.html(
+					`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-tag" name="action">
+						<i class="material-icons">done_all</i>
+					</button>
+					<button class="blue btn-floating waves-effect waves-light ${id}-btnDelete-tag" name="action">
+						<i class="material-icons">delete</i>
+					</button>
+					`
+					); 
+				tdButtons.children(`.${id}-btnSave-tag`).bind("click", Save_tag);
+				tdButtons.children(`.${id}-btnDelete-tag`).bind("click", Delete_tag);
+			});
+		});
 	}
 };
 
@@ -594,8 +692,9 @@ function Edit_comment(){
 		comment_editing = id;
 
 		var tdTemplate = par.children("td:nth-child(1)");
-		var tdButtons = par.children("td:nth-child(2)");
-		tdTemplate.html(`<input type="text" id="txtComment" value="${tdTemplate.children("input[type=text]").val()}">`);
+		var tdId = par.children("td:nth-child(2)");
+		var tdButtons = par.children("td:nth-child(3)");
+		tdTemplate.html(`<input type="text" value="${tdTemplate.children("input[type=text]").val()}">`);
 		tdButtons.html(
 			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-comment" name="action">
 				<i class="material-icons">done_all</i>
@@ -605,8 +704,8 @@ function Edit_comment(){
 			</button>
 			`
 			); 
-		$(`.${id}-btnSave-comment`).bind("click", Save_comment);
-		$(`.${id}-btnDelete-comment`).bind("click", Delete_comment);
+		tdButtons.children(`.${id}-btnSave-comment`).bind("click", Save_comment);
+		tdButtons.children(`.${id}-btnDelete-comment`).bind("click", Delete_comment);
 	}
 };
 
@@ -620,8 +719,9 @@ function Edit_promo(){
 		promo_editing = id;
 
 		var tdTemplate = par.children("td:nth-child(1)");
-		var tdButtons = par.children("td:nth-child(2)");
-		tdTemplate.html(`<input type="text" id="txtPromo" value="${tdTemplate.children("input[type=text]").val()}">`);
+		var tdId = par.children("td:nth-child(2)");
+		var tdButtons = par.children("td:nth-child(3)");
+		tdTemplate.html(`<input type="text" value="${tdTemplate.children("input[type=text]").val()}">`);
 		tdButtons.html(
 			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-promo" name="action">
 				<i class="material-icons">done_all</i>
@@ -631,8 +731,8 @@ function Edit_promo(){
 			</button>
 			`
 			); 
-		$(`.${id}-btnSave-promo`).bind("click", Save_promo);
-		$(`.${id}-btnDelete-promo`).bind("click", Delete_promo);
+		tdButtons.children(`.${id}-btnSave-promo`).bind("click", Save_promo);
+		tdButtons.children(`.${id}-btnDelete-promo`).bind("click", Delete_promo);
 	}
 };
 

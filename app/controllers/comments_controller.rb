@@ -18,7 +18,7 @@ class CommentsController < ApplicationController
 			return
 		else
 			comment = current_user.comments.create(comment_params)
-		
+
 			render json: comment
 		end
 	end
@@ -26,8 +26,12 @@ class CommentsController < ApplicationController
 	def destroy
 		comment = current_user.comments.find_by(id: params[:id])
 
-		unless comment
+		if comment.nil?
 			render json: {error: "comment not found"},
+			status: 404
+			return
+		elsif current_user.tags.find_by(comment_id: params[:id])
+			render json: {error: "comment being used"},
 			status: 404
 			return
 		end
