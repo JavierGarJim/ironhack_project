@@ -29,7 +29,6 @@ function set_timer() {
 }
 
 function poll(){
-return;
 	var request = $.ajax({
 	  	url: `/service/update`,
 	      	type: 'GET',
@@ -39,42 +38,44 @@ return;
 	request.done(function(data) {
     	console.log(data);
 
-    	if(init == true || data.status == "new") {
-	    	init = false;
+    	if(init == true) {
+    		data.status = data.tweets.length;
 
-			// Card Panel
-			fill_card_panel(data);
+    		init = false;
+    	}
 
-			// Tweets Panel
-			console.log(tweets_count)
+		// Card Panel
+		fill_card_panel(data);
 
-			if (tweets_count > 100) {
-				$("#tweets").empty();
+		// Tweets Panel
+		console.log(tweets_count)
 
-				tweets_count = 0;
-			}
+		if (tweets_count > 100) {
+			$("#tweets").empty();
 
-			data.tweets.forEach(function(t) {
-				$.when($("#tweets").prepend(
-					                    `<div class="card card-avatar">
-					                      <div class="card-content">
-					                          <span class="card-title activator grey-text text-darken-4" id="${t.id_str}">
-					                          </span>
-					                      </div>
-					                    </div>`
-				                  	)).then( function() {
-										twttr.widgets.createTweet(
-											t.id_str,
-											document.getElementById(t.id_str),
-											{
-												theme: 'blue'
-											}
-										);
-
-										tweets_count++;
-									});
-			});
+			tweets_count = 0;
 		}
+
+		data.tweets.slice(data.tweets.length - data.status, data.tweets.length).forEach(function(t) {
+			$.when($("#tweets").prepend(
+				                    `<div class="card card-avatar">
+				                      <div class="card-content">
+				                          <span class="card-title activator grey-text text-darken-4" id="${t.id_str}">
+				                          </span>
+				                      </div>
+				                    </div>`
+			                  	)).then( function() {
+									twttr.widgets.createTweet(
+										t.id_str,
+										document.getElementById(t.id_str),
+										{
+											theme: 'blue'
+										}
+									);
+
+									tweets_count++;
+								});
+		});
 		
 		set_timer();
   	});
@@ -422,8 +423,8 @@ function Save_tag(){
 			      	data: {
 			      		name: tdTag.children("input[type=text]").val(),
 			      		for_retweet: tdRetweet.children("input[type=checkbox]").is(":checked"),
-			      		comment_id: tdComment.children("div").children("input[type=text]").prop("value"),
-			      		promotion_id: tdPromo.children("div").children("input[type=text]").prop("value"),
+			      		comment_id: `${tdComment.children("div").children("input[type=text]").prop("value")}`,
+			      		promotion_id: `${tdPromo.children("div").children("input[type=text]").prop("value")}`,
 			      		actived: tdStatus.children("div").children("label").children("input[type=checkbox]").is(":checked")
 			      	}
 			});

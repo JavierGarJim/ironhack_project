@@ -73,10 +73,7 @@ class TagsController < ApplicationController
 
 	def update
 		tag = current_user.tags.find_by(id: params[:id])
-puts "------------"
-puts params.to_yaml
-# puts tag.to_yaml
-puts "------------"
+
 		unless tag
 			render json: {error: "tag not found"},
 			status: 404
@@ -97,7 +94,7 @@ puts "------------"
 		else
 			tag.promotion_id = nil
 		end
-		
+
 		tag.actived = tag_params[:actived]
 
 		tag.save
