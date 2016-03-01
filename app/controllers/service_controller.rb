@@ -35,81 +35,103 @@ class ServiceController < ApplicationController
 		end
 
 		if search
+			max_api_calls = 10
+
 			current_user.tags.each do |tag|
-				puts "*** SEARCH"
-				puts tag.name
+				if tag.actived
+					puts "*** SEARCH: " + tag.name
 
-				results = @client.search(tag.name, result_type: "recent")
+					begin
+						results = @client.search(tag.name, result_type: "recent")
+					rescue Twitter::Error
+						puts "*** FAILED search"
+					end
 
-				results.reverse!
+					sorted_results = []
 
-				max_api_calls = 10
+					results.each do |tweet|
+						sorted_results.push(tweet)
+					end
 
-				results.each do |tweet|
-					if find_tweet(tweet.attrs[:id_str]).nil? && tweet.attrs[:retweeted_status].nil?
-						current_user.tweets.create({id_str: tweet.attrs[:id_str]})
+					sorted_results.reverse!
 
-						new_tweets += 1
+					results = sorted_results
 
-						if tweet.attrs[:user][:screen_name] != current_user.identities.find_by(provider: "twitter").nickname
-							if tag.for_retweet
-								puts "*** For retweet"
-								puts "*** retweeted: " + tweet.attrs[:retweeted].to_s
+					results.each do |tweet|
+						if find_tweet(tweet.attrs[:id_str]).nil?
+							if tweet.attrs[:retweeted_status].nil?
+								current_user.tweets.create({id_str: tweet.attrs[:id_str]})
 
-								if tweet.attrs[:retweeted] == "false"
-									if max_api_calls > 0
-										@client.retweet(tweet)
+								new_tweets += 1
+							end
 
-										max_api_calls -= 1
+							if tweet.attrs[:user][:screen_name] != current_user.identities.find_by(provider: "twitter").nickname
+								if tag.for_retweet && tweet.attrs[:retweeted_status].nil?
+									puts "*** FOR RETWEET " + tweet.attrs[:retweeted].to_s
 
-										puts "*** Retweeted!"
+									if tweet.attrs[:retweeted] == "false"
+										if max_api_calls > 0
+											@client.retweet(tweet)
+
+											max_api_calls -= 1
+
+											puts "*** RETWEETED!"
+										end
+									end
+								end
+
+								if !tag.comment.nil? && tweet.attrs[:in_reply_to_status_id].nil?
+									puts "*** FOR COMMENT"
+
+									comment = current_user.comments.find_by(id: tag.comment.id)
+
+									unless comment.nil?
+										if max_api_calls > 0
+											puts "*** " + tweet.attrs[:user][:screen_name]
+
+											begin
+												@client.update("Hey @#{tweet.attrs[:user][:screen_name]}, #{comment.template}", in_reply_to_status_id: tweet.attrs[:id])
+											rescue Twitter::Error
+												puts "*** FAILED update"
+											end
+
+											max_api_calls -= 1
+
+											puts "*** COMMENTED!"
+										end
+									end
+								end
+
+								if !tag.promotion.nil? && tweet.attrs[:retweeted_status].nil?
+									promotion = current_user.promotions.find_by(id: tag.promotion.id)
+
+									unless promotion.nil?
+										if max_api_calls > 0
+											puts "*** For promo " + tweet.attrs[:user][:screen_name]
+
+											begin
+											  	@client.create_direct_message("@#{tweet.attrs[:user][:screen_name]}", "#{promotion.template}")
+											rescue Twitter::Error
+												puts "*** FAILED: " + tweet.attrs[:user][:screen_name] + " is not following me"
+											end
+
+											max_api_calls -= 1
+
+											puts "*** PROMOTED!"
+										end
 									end
 								end
 							end
-
-							if !tag.comment.nil? && tweet.attrs[:in_reply_to_status_id].nil?
-								puts "*** For comment"
-
-								puts tweet.attrs[:user][:screen_name]
-
-								comment = current_user.comments.find_by(id: tag.comment.id)
-
-								unless comment.nil?
-									if max_api_calls > 0
-										puts "*** " + tweet.attrs[:user][:screen_name]
-
-										#@client.update("Hi @#{tweet.attrs[:user][:screen_name]}, #{comment.template}", in_reply_to_status_id: tweet.attrs[:id])
-
-										max_api_calls -= 1
-
-										puts "*** Commmented!"
-									end
-								end
-							end
-
-							# if !tag.promotion.nil?
-							# 	puts "*** For promo"
-
-							# 	promotion = current_user.promotions.find_by(id: tag.promotion.id)
-
-							# 	unless promotion.nil?
-							# 		if max_api_calls > 0
-							# 			# puts "*** " + tweet.attrs[:user][:screen_name]
-
-							# 			# @client.update("Hi @#{tweet.attrs[:user][:screen_name]}, #{comment.template}", in_reply_to_status_id: tweet.attrs[:id])
-
-							# 			#max_api_calls -= 1
-
-							# 			puts "*** Promoted!"
-							# 		end
-							# 	end
-							# end
 						end
 					end
 				end
 			end
 		else
-			results = @client.home_timeline
+			begin
+				results = @client.home_timeline
+			rescue Twitter::Error
+				puts "*** FAILED home_timeline"
+			end
 
 			results.reverse!
 
@@ -124,7 +146,13 @@ class ServiceController < ApplicationController
 			puts "*** HOME_TIMELINE"
 		end
 
-		user_info = @client.user
+		begin
+			user_info = @client.user
+		rescue Twitter::Error
+			puts "*** FAILED user"
+
+			return
+		end
 
 		if current_user.last_request_time.nil?
 			current_user.initial_followers_count = user_info.attrs[:followers_count]
