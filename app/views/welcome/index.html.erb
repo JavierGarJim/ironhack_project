@@ -90,7 +90,7 @@
     <div class="container">  
         <div class="row">
             <div class="col l6 s12">
-                <form class="col s12" action="/welcome/contact" method="post">
+                <form class="col s12" action="/contact" method="post">
                     <div class="row">
                         <div class="input-field col s6">
                             <i class="mdi-action-account-circle prefix white-text"></i>
@@ -107,6 +107,9 @@
                             <textarea id="icon_prefix2" name="message" class="materialize-textarea white-text"></textarea>
                             <label for="icon_prefix2" class="white-text">Message</label>
                         </div>
+
+                        <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+                        
                         <div class="col offset-s7 s5">
                             <button class="btn waves-effect waves-light red darken-1" type="submit">Submit
                                 <i class="mdi-content-send right white-text"></i>

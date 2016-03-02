@@ -2,28 +2,33 @@ Rails.application.routes.draw do
   namespace :admin do
     # get "/stats" => "stats#stats"
     devise_scope :admin_user do
-      get '/stats/:scope' => "stats#stats", as: :admin_stats
+      get '/stats/:scope' => 'stats#stats', as: :admin_stats
     end
   end
+
+  root 'welcome#index'
 
   devise_for :admin_users, ActiveAdmin::Devise.config
   
   ActiveAdmin.routes(self)
 
-  devise_for :users, class_name: 'FormUser', :controllers => { omniauth_callbacks: 'omniauth_callbacks', registrations: 'registrations' }
-  
-  root 'welcome#index'
+  devise_for :users, class_name: 'FormUser', :controllers => { omniauth_callbacks: 'omniauth_callbacks' }, skip: [:registrations, :sessions, :passwords, :invitations]
+  as :user do
+    get    'sign_in' => 'welcome#signed_up', :as => :new_user_session
+    # post   'sign_in' => 'welcome#sign_up', :as => :user_session
+    delete 'sign_out' => 'devise/sessions#destroy', :as => :destroy_user_session
+  end
 
   resources :service, only: [ :index ]
-  get "/service/update" => "service#update"
+  get '/service/update' => 'service#update'
   
-  scope "/api" do
+  scope '/api' do
     resources(:tags, only: [:index, :create, :destroy, :update, :new])
     resources(:comments, only: [:index, :create, :destroy, :update])
     resources(:promotions, only: [:index, :create, :destroy, :update])
   end
 
-  post "welcome/contact" => "welcome#contact"
+  post '/contact' => 'welcome#contact'
 
   
 

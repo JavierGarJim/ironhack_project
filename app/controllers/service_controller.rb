@@ -148,27 +148,25 @@ class ServiceController < ApplicationController
 
 		begin
 			user_info = @client.user
+
+			if current_user.last_request_time.nil?
+				current_user.initial_followers_count = user_info.attrs[:followers_count]
+	    		current_user.initial_friends_count = user_info.attrs[:friends_count]
+				current_user.initial_listed_count = user_info.attrs[:listed_count]
+		    	current_user.initial_favourites_count = user_info.attrs[:favourites_count]
+			end
+
+			current_user.followers_count = user_info.attrs[:followers_count]
+	    	current_user.friends_count = user_info.attrs[:friends_count]
+			current_user.listed_count = user_info.attrs[:listed_count]
+	    	current_user.favourites_count = user_info.attrs[:favourites_count]
+			
+			current_user.last_request_time = DateTime.now.new_offset(0)
+
+			current_user.save
 		rescue Twitter::Error
 			puts "*** FAILED user"
-
-			return
 		end
-
-		if current_user.last_request_time.nil?
-			current_user.initial_followers_count = user_info.attrs[:followers_count]
-    		current_user.initial_friends_count = user_info.attrs[:friends_count]
-			current_user.initial_listed_count = user_info.attrs[:listed_count]
-	    	current_user.initial_favourites_count = user_info.attrs[:favourites_count]
-		end
-
-		current_user.followers_count = user_info.attrs[:followers_count]
-    	current_user.friends_count = user_info.attrs[:friends_count]
-		current_user.listed_count = user_info.attrs[:listed_count]
-    	current_user.favourites_count = user_info.attrs[:favourites_count]
-		
-		current_user.last_request_time = DateTime.now.new_offset(0)
-
-		current_user.save
 
 		puts "************************************************************************************"
 		puts "************************************************************************************"

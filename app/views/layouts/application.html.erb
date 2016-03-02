@@ -19,11 +19,27 @@
 	 
 	    <div class="loader-section section-left"></div>
 	    <div class="loader-section section-right"></div>
-	 
 	</div>
 
+	<% unless @contact_name.nil? %>
+		<div id="new-contact-modal" class="modal">
+	      	<div class="modal-content">
+			    <div class="">
+			    	<div class="row center">
+		    			<h5>Thank you for contacting us, <span style="font-style: italic"><%= @contact_name %></span></h5>
+			    	</div>
+			    	<div class="row center">
+			    		<h6>We will contact you via email as soon as possible.</h6>
+			    	</div>
+			    </div>
+	      	</div>
+	    </div>
+
+	    <a class="new_contact modal-trigger" href="#new-contact-modal" style="visibility: hidden"></a>
+	<% end %>
+
 	<!--Navigation-->
-	<div id="sign-up-modal" class="modal">
+<!-- 	<div id="sign-up-modal" class="modal">
       	<div class="modal-content">
 		    <div class="">
 		    	<div class="row">
@@ -38,13 +54,13 @@
 		    	</div>
 		    </div>
       	</div>
-    </div>
+    </div> -->
 
-	<div id="login-in-modal" class="modal">
+	<div id="sign-in-modal" class="modal">
       <div class="modal-content">
 		    <div class="">
 		    	<div class="row">
-		    		<span>Log in</span>
+		    		<h5>Sign in</h5>
 		    	</div>
 		    	<div class="row center">
 		    		<a class="blue btn"><i class="small fa fa-twitter white-text"></i></a>
@@ -54,22 +70,39 @@
       </div>
     </div>
 
+	<% if current_page?(new_user_session_path) && !@username.nil? %>
+		<div id="signed-up-modal" class="modal">
+	      <div class="modal-content">
+			    <div class="">
+			    	<div class="row center">
+		    			<h5>Thank you for signing up, <span style="font-style: italic"><%= @username %></span></h5>
+			    	</div>
+			    	<div class="row center">
+			    		<h6>We will contact you via Twitter once your account is activated.</h6>
+			    	</div>
+			    </div>
+	      </div>
+	    </div>
+
+    	<a class="signed_up modal-trigger" href="#signed-up-modal" style="visibility: hidden"></a>
+    <% end %>
+
 	<div class="navbar-fixed">
 	    <nav id="nav_f" class="default_color" role="navigation">
 	        <div class="nav_bar_container">
 	            <div class="nav-wrapper">
 	            <a href="/" id="logo-container" class="brand-logo">#ilabs</a>
                 <ul class="right hide-on-med-and-down">
-                	<% if current_page?(root_path) %>
+                	<% if !current_page?(service_index_path) && !current_page?(service_update_path) %>
 	                    <li><a href="#intro">About</a></li>
 	                    <li><a href="#team">Team</a></li>
 	                    <li><a href="#contact">Contact</a></li>
-	                    <li><a href="/service">Service</a></li>
                     <% end %>
                 	<% if current_user.nil? %>
-	                    <li><a class="user_label modal-trigger" href="#sign-up-modal">Sign up</a></li>
-	                    <li><a class="user_label modal-trigger" href="#login-in-modal">Log in</a></li>
+	                    <!-- <li><a class="user_label modal-trigger" href="#sign-up-modal">Sign up</a></li> -->
+	                    <li><a class="user_label modal-trigger" href="#sign-in-modal">Sign in</a></li>
                     <% else %>
+                    	<li><a href="/service">Service</a></li>
                     	<% if current_page?(service_index_path) %>
                     		<li>
             					<% if current_identity.provider == "twitter" %>
@@ -91,16 +124,16 @@
                     <% end %>
                 </ul>
                 <ul id="nav-mobile" class="side-nav">
-                	<% if current_page?(root_path) %>
+                	<% if !current_page?(service_index_path) && !current_page?(service_update_path) %>
 	                    <li><a href="#intro">About</a></li>
 	                    <li><a href="#team">Team</a></li>
 	                    <li><a href="#contact">Contact</a></li>
-	                    <li><a href="/service">Service</a></li>
                     <% end %>
                 	<% if current_user.nil? %>
-	                    <li><a class="user_label modal-trigger" href="#sign-up-modal">Sign up</a></li>
-	                    <li><a class="user_label modal-trigger" href="#login-in-modal">Log in</a></li>
+	                    <!-- <li><a class="user_label modal-trigger" href="#sign-up-modal">Sign up</a></li> -->
+	                    <li><a class="user_label modal-trigger" href="#sign-in-modal">Sign in</a></li>
                     <% else %>
+                    	<li><a href="/service">Service</a></li>
                     	<li>
                     		<a href="<%= destroy_user_session_path %>" data-method="delete">
 								<div class="chip">
