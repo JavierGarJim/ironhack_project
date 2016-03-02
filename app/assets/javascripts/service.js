@@ -36,7 +36,7 @@ function poll(){
 	});
 
 	request.done(function(data) {
-    	console.log(data);
+    	// console.log(data);
 
     	if(init == true) {
     		data.status = data.tweets.length;
@@ -48,9 +48,11 @@ function poll(){
 		fill_card_panel(data);
 
 		// Tweets Panel
-		console.log(tweets_count)
+		// console.log(tweets_count);
+		// console.log(data.tweets.length);
+		// console.log(data.status);
 
-		if (tweets_count > 100) {
+		if ((tweets_count > 100) && (data.status > 0)) {
 			$("#tweets").empty();
 
 			tweets_count = 0;
@@ -149,16 +151,16 @@ function fill_card_panel(data) {
 	}
 
 	$(".card-followers").empty();
-	$(".card-followers").append(`<span class="white-text">${data.user.initial_followers_count}</span> <span class="${followers_color}">${followers_sign}${followers_count_inc}</span>`);
+	$(".card-followers").append(`<span class="white-text">${data.user.followers_count}</span> <span class="${followers_color}">${followers_sign}${followers_count_inc}</span>`);
 
 	$(".card-friends").empty();
-	$(".card-friends").append(`<span class="white-text">${data.user.initial_friends_count}</span> <span class="${friends_color}">${friends_sign}${friends_count_inc}</span>`);
+	$(".card-friends").append(`<span class="white-text">${data.user.friends_count}</span> <span class="${friends_color}">${friends_sign}${friends_count_inc}</span>`);
 
 	$(".card-listed").empty();
-	$(".card-listed").append(`<span class="white-text">${data.user.initial_listed_count}</span> <span class="${listed_color}">${listed_sign}${listed_count_inc}</span>`);
+	$(".card-listed").append(`<span class="white-text">${data.user.listed_count}</span> <span class="${listed_color}">${listed_sign}${listed_count_inc}</span>`);
 
 	$(".card-favourites").empty();
-	$(".card-favourites").append(`<span class="white-text">${data.user.initial_favourites_count}</span> <span class="${favourites_color}">${favourites_sign}${favourites_count_inc}</span>`);
+	$(".card-favourites").append(`<span class="white-text">${data.user.favourites_count}</span> <span class="${favourites_color}">${favourites_sign}${favourites_count_inc}</span>`);
 }
 
 function Update_tags() {

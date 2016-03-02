@@ -133,7 +133,7 @@
 	            <div class="nav-wrapper">
 	            <a href="/" id="logo-container" class="brand-logo">#ilabs</a>
                 <ul class="right hide-on-med-and-down">
-                	<% if !current_page?(service_index_path) && !current_page?(service_update_path) %>
+                	<% if !current_page?(service_index_path) %>
 	                    <li><a href="#intro">About</a></li>
 	                    <li><a href="#team">Team</a></li>
 	                    <li><a href="#contact">Contact</a></li>
@@ -164,7 +164,7 @@
                     <% end %>
                 </ul>
                 <ul id="nav-mobile" class="side-nav">
-                	<% if !current_page?(service_index_path) && !current_page?(service_update_path) %>
+                	<% if !current_page?(service_index_path) %>
 	                    <li><a href="#intro">About</a></li>
 	                    <li><a href="#team">Team</a></li>
 	                    <li><a href="#contact">Contact</a></li>
