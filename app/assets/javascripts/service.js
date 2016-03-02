@@ -36,7 +36,7 @@ function poll(){
 	});
 
 	request.done(function(data) {
-    	// console.log(data);
+    	console.log(data);
 
     	if(init == true) {
     		data.status = data.tweets.length;
@@ -172,7 +172,8 @@ function Update_tags() {
 	request.done(function(response) {
 		response.forEach(function(t) {
 			var tr = `
-				<tr id="${t.id}"> 
+				<tr id="${t.id}">
+					<td></td>
 					<td><input type="text" value="${t.name}" readonly></td>`;
 
 			if (t.for_retweet) {
@@ -218,14 +219,14 @@ function Update_tags() {
 			
 			$('.tblData-search tbody').prepend(tr);
 			var par = $(`#${t.id}`);
-			var tdComment = par.children("td:nth-child(3)");
-			var tdPromo = par.children("td:nth-child(4)");
-			var tdStatus = par.children("td:nth-child(5)");
+			var tdComment = par.children("td:nth-child(4)");
+			var tdPromo = par.children("td:nth-child(5)");
+			var tdStatus = par.children("td:nth-child(6)");
 			tdComment.children("select").material_select();
 			tdComment.children("div").children("input[type=text]").prop('disabled', true);
 			tdPromo.children("select").material_select();
 			tdPromo.children("div").children("input[type=text]").prop('disabled', true);
-			var tdButtons = par.children("td:nth-child(6)");
+			var tdButtons = par.children("td:nth-child(7)");
 			tdButtons.children(`.${t.id}-btnEdit-tag`).bind("click", Edit_tag);	
 			tdButtons.children(`.${t.id}-btnDelete-tag`).bind("click", Delete_tag);
 		});
@@ -242,6 +243,7 @@ function Update_comments() {
 		comments.forEach(function(c) {
 			var tr = `
 				<tr id="${c.id}"> 
+					<td></td>
 					<td><input type="text" value="${c.template}" readonly></td>
 					<td>${c.id}</td>
 					`;
@@ -273,6 +275,7 @@ function Update_promos() {
 		promotions.forEach(function(p) {
 			var tr = `
 					<tr id="${p.id}"> 
+					<td></td>
 					<td><input type="text" value="${p.template}" readonly></td>
 					<td>${p.id}</td>
 					`;
@@ -313,7 +316,8 @@ function Add_tag(){
 
 			promotions_request.done(function(promotions) {
 				$(".tblData-search tbody").prepend( 
-													`<tr id="0"> 
+													`<tr id="0">
+													<td></td>
 													<td><input class="validate" type="text"></td>
 													<td>
 														<input type="checkbox" id="retweet-box"><label for="retweet-box"></label>
@@ -360,7 +364,8 @@ function Add_comment(){
 		comment_editing = 0;
 
 		$(".tblData-comment tbody").prepend( 
-			`<tr id="0"> 
+			`<tr id="0">
+			<td></td>
 			<td><input class="validate" type="text"></td>
 			<td></td>
 			<td>
@@ -385,7 +390,8 @@ function Add_promo(){
 		promo_editing = 0;
 
 		$(".tblData-promo tbody").prepend( 
-			`<tr id="0"> 
+			`<tr id="0">
+			<td></td>
 			<td><input class="validate" type="text"></td>
 			<td></td>
 			<td>
@@ -406,12 +412,12 @@ function Add_promo(){
 function Save_tag(){ 
 	var par = $(this).parent().parent();
 	var id = par.prop('id');
-	var tdTag = par.children("td:nth-child(1)"); 
-	var tdRetweet = par.children("td:nth-child(2)");
-	var tdComment = par.children("td:nth-child(3)");
-	var tdPromo = par.children("td:nth-child(4)");
-	var tdStatus = par.children("td:nth-child(5)");
-	var tdButtons = par.children("td:nth-child(6)");
+	var tdTag = par.children("td:nth-child(2)"); 
+	var tdRetweet = par.children("td:nth-child(3)");
+	var tdComment = par.children("td:nth-child(4)");
+	var tdPromo = par.children("td:nth-child(5)");
+	var tdStatus = par.children("td:nth-child(6)");
+	var tdButtons = par.children("td:nth-child(7)");
 
 	if(tdTag.children("input[type=text]").val() == "") {
 		return;
@@ -498,9 +504,9 @@ function Save_tag(){
 function Save_comment(){ 
 	var par = $(this).parent().parent();
 	var id = par.prop('id');
-	var tdTemplate = par.children("td:nth-child(1)");
-	var tdId = par.children("td:nth-child(2)");
-	var tdButtons = par.children("td:nth-child(3)");
+	var tdTemplate = par.children("td:nth-child(2)");
+	var tdId = par.children("td:nth-child(3)");
+	var tdButtons = par.children("td:nth-child(4)");
 
 	if(tdTemplate.children("input[type=text]").val() == "") {
 		return;
@@ -547,9 +553,9 @@ function Save_comment(){
 function Save_promo(){ 
 	var par = $(this).parent().parent();
 	var id = par.prop('id');
-	var tdTemplate = par.children("td:nth-child(1)");
-	var tdId = par.children("td:nth-child(2)");
-	var tdButtons = par.children("td:nth-child(3)");
+	var tdTemplate = par.children("td:nth-child(2)");
+	var tdId = par.children("td:nth-child(3)");
+	var tdButtons = par.children("td:nth-child(4)");
 
 	if(tdTemplate.children("input[type=text]").val() == "") {
 		return;
@@ -602,12 +608,12 @@ function Edit_tag(){
 
 		tag_editing = id;
 
-		var tdTag = par.children("td:nth-child(1)"); 
-		var tdRetweet = par.children("td:nth-child(2)"); 
-		var tdComment = par.children("td:nth-child(3)"); 
-		var tdPromo = par.children("td:nth-child(4)");
-		var tdStatus = par.children("td:nth-child(5)");
-		var tdButtons = par.children("td:nth-child(6)");
+		var tdTag = par.children("td:nth-child(2)"); 
+		var tdRetweet = par.children("td:nth-child(3)"); 
+		var tdComment = par.children("td:nth-child(4)"); 
+		var tdPromo = par.children("td:nth-child(5)");
+		var tdStatus = par.children("td:nth-child(6)");
+		var tdButtons = par.children("td:nth-child(7)");
 
 		var comments_request = $.ajax({
 		  	url: `/api/comments`,
@@ -694,9 +700,9 @@ function Edit_comment(){
 
 		comment_editing = id;
 
-		var tdTemplate = par.children("td:nth-child(1)");
-		var tdId = par.children("td:nth-child(2)");
-		var tdButtons = par.children("td:nth-child(3)");
+		var tdTemplate = par.children("td:nth-child(2)");
+		var tdId = par.children("td:nth-child(3)");
+		var tdButtons = par.children("td:nth-child(4)");
 		tdTemplate.html(`<input type="text" value="${tdTemplate.children("input[type=text]").val()}">`);
 		tdButtons.html(
 			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-comment" name="action">
@@ -721,9 +727,9 @@ function Edit_promo(){
 
 		promo_editing = id;
 
-		var tdTemplate = par.children("td:nth-child(1)");
-		var tdId = par.children("td:nth-child(2)");
-		var tdButtons = par.children("td:nth-child(3)");
+		var tdTemplate = par.children("td:nth-child(2)");
+		var tdId = par.children("td:nth-child(3)");
+		var tdButtons = par.children("td:nth-child(4)");
 		tdTemplate.html(`<input type="text" value="${tdTemplate.children("input[type=text]").val()}">`);
 		tdButtons.html(
 			`<button class="blue btn-floating waves-effect waves-light ${id}-btnSave-promo" name="action">

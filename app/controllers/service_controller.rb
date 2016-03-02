@@ -63,11 +63,11 @@ class ServiceController < ApplicationController
 
 					results.each do |tweet|
 						if find_tweet(tweet.attrs[:id_str]).nil?
-							# if tweet.attrs[:retweeted_status].nil?
+							if tweet.attrs[:retweeted_status].nil?
 								current_user.tweets.create({id_str: tweet.attrs[:id_str]})
 
 								new_tweets += 1
-							# end
+							end
 
 							if max_api_calls > 0
 								if tweet.attrs[:user][:screen_name] != nickname
@@ -76,7 +76,7 @@ class ServiceController < ApplicationController
 											begin
 												puts "*** FOR RETWEET"
 
-												@client.retweet(tweet)
+												@client.retweet!(tweet)
 
 												puts "*** RETWEETED!"
 											rescue Twitter::Error
