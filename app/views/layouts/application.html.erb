@@ -13,6 +13,80 @@
 </head>
 <body id="top" class="">
 
+	<% flash.each do |key, value| %>
+  		<% if key == 'error' && value == 'contact_error' %>
+			<div id="error-contact-modal" class="modal">
+		      	<div class="modal-content">
+				    <div class="">
+				    	<div class="row">
+			    			<h5>#ilabs</h5>
+				    	</div>
+				    	<div class="row center">
+				    		<h6>Please fill in correctly all fields of the form to contact us.</h6>
+				    	</div>
+				    </div>
+		      	</div>
+		    </div>
+
+		    <a class="error_contact modal-trigger" href="#error-contact-modal" style="visibility: hidden"></a>
+		<% elsif key == 'notice' && value == 'contact_success' %>
+			<div id="new-contact-modal" class="modal">
+		      	<div class="modal-content">
+				    <div class="">
+				    	<div class="row">
+				    		<h5>#ilabs</h5>
+				    	</div>
+				    	<div class="row center">
+				    		<h6>Thank you for contacting us, <b><span style="font-style: italic"><%= @contact_name %></span></b></h6>
+				    		<h6>We will contact you via email as soon as possible.</h6>
+				    	</div>
+				    </div>
+		      	</div>
+		    </div>
+
+		    <a class="new_contact modal-trigger" href="#new-contact-modal" style="visibility: hidden"></a>
+
+		<% elsif key == 'alert' && value == 'Your account has not been approved by your administrator yet.' %>
+			<% if current_page?(new_user_session_path) %>
+				<div id="signed-up-modal" class="modal">
+			      <div class="modal-content">
+					    <div class="">
+					    	<div class="row">
+				    			<h5>Signed up!</h5>
+					    	</div>
+					    	<div class="row center">
+					    		<h6>Thank you for signing up, <b><span style="font-style: italic"><%= session[:signed_user_nickname] %></span></b>.</h6>
+					    		<h6>We will contact you via Twitter once your account is activated.</h6>
+					    	</div>
+					    </div>
+			      </div>
+			    </div>
+
+		    	<a class="signed_up modal-trigger" href="#signed-up-modal" style="visibility: hidden"></a>
+		    <% end %>
+
+		<% else %>
+
+			<% if current_page?(new_user_session_path) %>
+				<div id="signed-up-modal" class="modal">
+			      <div class="modal-content">
+					    <div class="">
+					    	<div class="row">
+				    			<h5>#ilabs</h5>
+					    	</div>
+					    	<div class="row center">
+					    		<h6><%= value %></h6>
+					    	</div>
+					    </div>
+			      </div>
+			    </div>
+
+		    	<a class="signed_up modal-trigger" href="#signed-up-modal" style="visibility: hidden"></a>
+		    <% end %>
+
+	  	<% end %>
+	<% end %>
+
 	<!-- Pre Loader -->
 	<div id="loader-wrapper">
 	    <div id="loader"></div>
@@ -20,23 +94,6 @@
 	    <div class="loader-section section-left"></div>
 	    <div class="loader-section section-right"></div>
 	</div>
-
-	<% unless @contact_name.nil? %>
-		<div id="new-contact-modal" class="modal">
-	      	<div class="modal-content">
-			    <div class="">
-			    	<div class="row center">
-		    			<h5>Thank you for contacting us, <span style="font-style: italic"><%= @contact_name %></span></h5>
-			    	</div>
-			    	<div class="row center">
-			    		<h6>We will contact you via email as soon as possible.</h6>
-			    	</div>
-			    </div>
-	      	</div>
-	    </div>
-
-	    <a class="new_contact modal-trigger" href="#new-contact-modal" style="visibility: hidden"></a>
-	<% end %>
 
 	<!--Navigation-->
 <!-- 	<div id="sign-up-modal" class="modal">
@@ -69,23 +126,6 @@
 		    </div>
       </div>
     </div>
-
-	<% if current_page?(new_user_session_path) && !@username.nil? %>
-		<div id="signed-up-modal" class="modal">
-	      <div class="modal-content">
-			    <div class="">
-			    	<div class="row center">
-		    			<h5>Thank you for signing up, <span style="font-style: italic"><%= @username %></span></h5>
-			    	</div>
-			    	<div class="row center">
-			    		<h6>We will contact you via Twitter once your account is activated.</h6>
-			    	</div>
-			    </div>
-	      </div>
-	    </div>
-
-    	<a class="signed_up modal-trigger" href="#signed-up-modal" style="visibility: hidden"></a>
-    <% end %>
 
 	<div class="navbar-fixed">
 	    <nav id="nav_f" class="default_color" role="navigation">

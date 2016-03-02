@@ -19,6 +19,8 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       @identity.update_attribute( :user_id, @user.id )
     end
 
+    session[:signed_user_nickname] = @identity.nickname
+
     if @user.email.blank? && @identity.email
       @user.update_attribute( :email, @identity.email)
     end

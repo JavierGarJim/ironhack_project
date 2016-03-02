@@ -21,6 +21,8 @@ gem 'sdoc', '~> 0.4.0', group: :doc
 
 gem 'ruby-oembed'
 
+gem 'valid_email'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

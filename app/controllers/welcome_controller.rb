@@ -1,5 +1,15 @@
 class WelcomeController < ApplicationController
 	def contact
+		if params[:name] == "" || !ValidateEmail.valid?(params[:email]) || params[:message] == ""
+			flash.now[:error] = 'contact_error'
+			
+			render 'index'
+
+			return
+		end
+
+		flash.now[:notice] = 'contact_success'
+
 		AdminMailer.new_contact(params[:name], params[:email], params[:message]).deliver_now
 
 		@contact_name = params[:name]
@@ -8,12 +18,6 @@ class WelcomeController < ApplicationController
 	end
 
 	def signed_up
-		user = User.last
-
-		if user.approved.nil?
-			@username = user.identities.find_by(provider: 'twitter').nickname
-		end
-
 		render 'index'
 	end
 
