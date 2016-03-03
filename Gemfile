@@ -53,8 +53,9 @@ end
 gem 'puma'
 gem 'rails_12factor', group: :production
 gem 'quiet_assets'
+gem 'pg'
+
 group :development, :test do
-  gem 'sqlite3'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'factory_girl_rails'
@@ -77,7 +78,6 @@ group :test do
 end
 
 group :production do
-  gem 'pg'
   gem 'lograge'
 end
 

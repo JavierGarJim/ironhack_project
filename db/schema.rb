@@ -13,6 +13,9 @@
 
 ActiveRecord::Schema.define(version: 20160229145856) do
 
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "active_admin_comments", force: :cascade do |t|
     t.string   "namespace"
     t.text     "body"
@@ -24,9 +27,9 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.datetime "updated_at"
   end
 
-  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id"
-  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace"
-  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id"
+  add_index "active_admin_comments", ["author_type", "author_id"], name: "index_active_admin_comments_on_author_type_and_author_id", using: :btree
+  add_index "active_admin_comments", ["namespace"], name: "index_active_admin_comments_on_namespace", using: :btree
+  add_index "active_admin_comments", ["resource_type", "resource_id"], name: "index_active_admin_comments_on_resource_type_and_resource_id", using: :btree
 
   create_table "admin_users", force: :cascade do |t|
     t.string   "email",                  default: "", null: false
@@ -43,8 +46,8 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.datetime "updated_at",                          null: false
   end
 
-  add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true
-  add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
+  add_index "admin_users", ["email"], name: "index_admin_users_on_email", unique: true, using: :btree
+  add_index "admin_users", ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true, using: :btree
 
   create_table "comments", force: :cascade do |t|
     t.string   "template"
@@ -53,7 +56,7 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.integer  "user_id"
   end
 
-  add_index "comments", ["user_id"], name: "index_comments_on_user_id"
+  add_index "comments", ["user_id"], name: "index_comments_on_user_id", using: :btree
 
   create_table "identities", force: :cascade do |t|
     t.integer  "user_id"
@@ -71,7 +74,7 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.string   "secrettoken"
   end
 
-  add_index "identities", ["user_id"], name: "index_identities_on_user_id"
+  add_index "identities", ["user_id"], name: "index_identities_on_user_id", using: :btree
 
   create_table "promotions", force: :cascade do |t|
     t.string   "template"
@@ -80,7 +83,7 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.integer  "user_id"
   end
 
-  add_index "promotions", ["user_id"], name: "index_promotions_on_user_id"
+  add_index "promotions", ["user_id"], name: "index_promotions_on_user_id", using: :btree
 
   create_table "tags", force: :cascade do |t|
     t.string   "name"
@@ -93,9 +96,9 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.integer  "promotion_id"
   end
 
-  add_index "tags", ["comment_id"], name: "index_tags_on_comment_id"
-  add_index "tags", ["promotion_id"], name: "index_tags_on_promotion_id"
-  add_index "tags", ["user_id"], name: "index_tags_on_user_id"
+  add_index "tags", ["comment_id"], name: "index_tags_on_comment_id", using: :btree
+  add_index "tags", ["promotion_id"], name: "index_tags_on_promotion_id", using: :btree
+  add_index "tags", ["user_id"], name: "index_tags_on_user_id", using: :btree
 
   create_table "tweets", force: :cascade do |t|
     t.string   "id_str"
@@ -104,7 +107,7 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.integer  "user_id"
   end
 
-  add_index "tweets", ["user_id"], name: "index_tweets_on_user_id"
+  add_index "tweets", ["user_id"], name: "index_tweets_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "email",                    default: ""
@@ -139,10 +142,17 @@ ActiveRecord::Schema.define(version: 20160229145856) do
     t.datetime "last_request_time"
   end
 
-  add_index "users", ["email"], name: "index_users_on_email"
-  add_index "users", ["invitation_token"], name: "index_users_on_invitation_token", unique: true
-  add_index "users", ["invitations_count"], name: "index_users_on_invitations_count"
-  add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id"
-  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+  add_index "users", ["email"], name: "index_users_on_email", using: :btree
+  add_index "users", ["invitation_token"], name: "index_users_on_invitation_token", unique: true, using: :btree
+  add_index "users", ["invitations_count"], name: "index_users_on_invitations_count", using: :btree
+  add_index "users", ["invited_by_id"], name: "index_users_on_invited_by_id", using: :btree
+  add_index "users", ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true, using: :btree
 
+  add_foreign_key "comments", "users"
+  add_foreign_key "identities", "users"
+  add_foreign_key "promotions", "users"
+  add_foreign_key "tags", "comments"
+  add_foreign_key "tags", "promotions"
+  add_foreign_key "tags", "users"
+  add_foreign_key "tweets", "users"
 end
