@@ -51,7 +51,7 @@ group :development do
 end
 
 gem 'puma'
-gem 'rails_12factor'
+gem 'rails_12factor', group: :production
 gem 'quiet_assets'
 group :development, :test do
   gem 'sqlite3'
