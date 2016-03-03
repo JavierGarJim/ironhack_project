@@ -51,7 +51,7 @@ end
   # gem 'puma'
 # end
 
-
+gem 'figaro'
 gem 'rails_12factor', group: :production
 # gem 'quiet_assets'
 gem 'pg'
