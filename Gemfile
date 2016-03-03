@@ -46,13 +46,13 @@ group :development do
 end
 
 
-group :development do
-  gem 'happy_seed', '~> 0.0.21'
-end
+# group :development do
+  # gem 'happy_seed', '~> 0.0.21'
+# end
 
-gem 'puma'
+# gem 'puma'
 gem 'rails_12factor', group: :production
-gem 'quiet_assets'
+# gem 'quiet_assets'
 gem 'pg'
 
 group :development, :test do

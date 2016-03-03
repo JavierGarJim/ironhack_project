@@ -188,9 +188,6 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
-    happy_seed (0.0.21)
-      rails (~> 4.2)
-      thor
     has_scope (0.6.0)
       actionpack (>= 3.2, < 5)
       activesupport (>= 3.2, < 5)
@@ -291,9 +288,6 @@ GEM
     pry-stack_explorer (0.4.9.2)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    puma (2.16.0)
-    quiet_assets (1.1.0)
-      railties (>= 3.1, < 5.0)
     rack (1.6.4)
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -448,7 +442,6 @@ DEPENDENCIES
   faker
   guard-cucumber
   guard-rspec
-  happy_seed (~> 0.0.21)
   inherited_resources
   jazz_hands!
   jbuilder (~> 2.0)
@@ -458,8 +451,6 @@ DEPENDENCIES
   omniauth
   omniauth-twitter
   pg
-  puma
-  quiet_assets
   rails (= 4.2.5.1)
   rails_12factor
   rdiscount
