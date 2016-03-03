@@ -817,7 +817,7 @@ function Delete_promo(){
 	}
 };
 
-(function(){ //Add, Save, Edit and Delete functions code
+$(document).ready(function(){
 	poll();
 
 	Update_tags();
@@ -835,7 +835,7 @@ function Delete_promo(){
 	$(".btnEdit-promo").bind("click", Edit_promo); 
 	$(".btnDelete-promo").bind("click", Delete_promo); 
 	$(".btnAdd-promo").bind("click", Add_promo); 
-})();
+});
 
 
 

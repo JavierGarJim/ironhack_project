@@ -8,10 +8,4 @@ $(document).ready(function(){
 	$('.signed_up').click();
 	$('.new_contact').click();
 	$('.error_contact').click();
-
-	// $('.sign-up-button').bind("click", function(){
-	// 	if($('.sign-up-input').val() == "") {
-	// 		return;
-	// 	}
-	// });
 });

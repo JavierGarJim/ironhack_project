@@ -91,3 +91,5 @@ gem 'inherited_resources'
 gem 'dateslices'
 gem 'jazz_hands', github: 'danrabinowitz/jazz_hands', branch: 'use-newer-version-of-pry', groups: [:development, :test]
 gem 'figaro'
+gem 'sprockets', '>= 3.0.0'
+gem 'sprockets-es6', require: 'sprockets/es6'
