@@ -78,9 +78,9 @@ group :test do
   gem 'webmock'
 end
 
-# group :production do
-#   gem 'lograge'
-# end
+group :production do
+  gem 'lograge'
+end
 
 gem 'devise', '~> 3.4'
 gem 'devise_invitable'
