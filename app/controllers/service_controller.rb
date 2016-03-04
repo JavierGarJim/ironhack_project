@@ -119,14 +119,14 @@ class ServiceController < ApplicationController
 										end
 									end
 
-									if !tag.promotion.nil? && tweet.attrs[:retweeted_status].nil?
+									if !tag.promotion.nil? && tweet.attrs[:in_reply_to_status_id].nil? && tweet.attrs[:retweeted_status].nil?
 										promotion = current_user.promotions.find_by(id: tag.promotion.id)
 
 										unless promotion.nil?
 											puts "*** For promo " + tweet.attrs[:user][:screen_name]
 
 											begin
-											  	@client.create_direct_message("@#{tweet.attrs[:user][:screen_name]}", "#{promotion.template}")
+											  	@client.create_direct_message("@#{tweet.attrs[:user][:screen_name]}", " #{promotion.template}")
 
 												max_api_calls -= 1
 
